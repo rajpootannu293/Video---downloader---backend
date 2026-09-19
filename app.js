@@ -1,20 +1,13 @@
 const express = require("express");
-const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
 
-// Home / Health Check
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Video Downloader Backend is running!"
-  });
+  res.send("Video Downloader Backend is running!");
 });
 
-// Download API
 app.post("/api/download", (req, res) => {
   const { url } = req.body;
 
@@ -28,7 +21,6 @@ app.post("/api/download", (req, res) => {
   try {
     const videoUrl = new URL(url);
 
-    // Only HTTP/HTTPS URLs are accepted
     if (
       videoUrl.protocol !== "http:" &&
       videoUrl.protocol !== "https:"
@@ -53,7 +45,6 @@ app.post("/api/download", (req, res) => {
   }
 });
 
-// Render provides the PORT
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
