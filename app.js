@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const ytDlp = require('yt-dlp-exec');
+const ytdlp = require('yt-dlp-exec');
+const axios = require('axios');
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.post('/api/get-reel', async (req, res) => {
     }
 
     try {
-        const output = await ytDlp(reelUrl, {
+        const output = await ytdlp(reelUrl, {
             dumpSingleJson: true,
             noCheckCertificates: true,
             noWarnings: true,
@@ -43,6 +44,33 @@ app.post('/api/get-reel', async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Server error ya Private post.' });
+    }
+});
+
+// Proxy Route - CORS aur Blank Screen dikkat dur karne ke liye
+app.get('/api/download-proxy', async (req, res) => {
+    try {
+        const videoUrl = req.query.url;
+        if (!videoUrl) {
+            return res.status(400).send('URL zaroori hai.');
+        }
+
+        const response = await axios({
+            method: 'get',
+            url: videoUrl,
+            responseType: 'stream',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        });
+
+        res.setHeader('Content-Disposition', 'attachment; filename="instagram-reel.mp4"');
+        res.setHeader('Content-Type', 'video/mp4');
+
+        response.data.pipe(res);
+    } catch (error) {
+        console.error('Proxy Error:', error.message);
+        res.status(500).send('Video download me dikkat aayi.');
     }
 });
 
