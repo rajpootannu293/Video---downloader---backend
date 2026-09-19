@@ -1,13 +1,13 @@
 {
-  "name": "video-downloader-backend",
+  "name": "insta-downloader-backend",
   "version": "1.0.0",
-  "description": "Video downloader backend",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js"
   },
   "dependencies": {
-  "express": "^5.1.0",
-  "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "yt-dlp-exec": "^2.4.0"
   }
 }
