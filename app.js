@@ -1,85 +1,173 @@
-press = require("express");
+const http = require("http");
+const { URL } = require("url");
 const { Readable } = require("stream");
-
-const app = express();
-
-app.use(express.json());
-
-// Allow your TrebEdit/local website to connect
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
-
-app.get("/", (req, res) => {
-  res.send("Video Downloader Backend is running!");
-});
-
-app.post("/api/download", async (req, res) => {
-  try {
-    const { url } = req.body;
-
-    if (!url) {
-      return res.status(400).json({
-        success: false,
-        message: "Video URL is required"
-      });
-    }
-
-    const videoUrl = new URL(url);
-
-    // For testing: only this authorized direct-video host
-    if (
-      videoUrl.protocol !== "https:" ||
-      videoUrl.hostname !== "interactive-examples.mdn.mozilla.net"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Please use an authorized direct MP4 video URL."
-      });
-    }
-
-    const response = await fetch(videoUrl);
-
-    if (!response.ok || !response.body) {
-      return res.status(502).json({
-        success: false,
-        message: "Video could not be fetched."
-      });
-    }
-
-    res.setHeader(
-      "Content-Type",
-      response.headers.get("content-type") || "video/mp4"
-    );
-
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="video.mp4"'
-    );
-
-    const contentLength = response.headers.get("content-length");
-
-    if (contentLength) {
-      res.setHeader("Content-Length", contentLength);
-    }
-
-    Readable.fromWeb(response.body).pipe(res);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Video download failed."
-    });
-  }
-});
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, "0.0.0.0", () => {
+// अभी testing के लिए केवल इस authorized direct-video host को allow किया गया है
+const ALLOWED_HOSTS = new Set([
+  "interactive-examples.mdn.mozilla.net"
+]);
+
+function sendJSON(res, statusCode, data) {
+  const body = JSON.stringify(data);
+
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Content-Length": Buffer.byteLength(body)
+  });
+
+  res.end(body);
+}
+
+function sendText(res, statusCode, text) {
+  res.writeHead(statusCode, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Access-Control-Allow-Origin": "*"
+  });
+
+  res.end(text);
+}
+
+const server = http.createServer(async (req, res) => {
+  // CORS
+  if (req.method === "OPTIONS") {
+    res.writeHead(204, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
+    });
+    return res.end();
+  }
+
+  // Home
+  if (req.method === "GET" && req.url === "/") {
+    return sendText(
+      res,
+      200,
+      "Video Downloader Backend is running!"
+    );
+  }
+
+  // POST /api/download
+  if (req.method === "POST" && req.url === "/api/download") {
+    let body = "";
+
+    req.on("data", chunk => {
+      body += chunk.toString();
+
+      // Request बहुत बड़ा होने से रोकना
+      if (body.length > 10000) {
+        req.destroy();
+      }
+    });
+
+    req.on("end", () => {
+      try {
+        const data = JSON.parse(body);
+        const videoURL = new URL(data.url);
+
+        if (videoURL.protocol !== "https:") {
+          return sendJSON(res, 400, {
+            success: false,
+            message: "Only HTTPS video URLs are allowed."
+          });
+        }
+
+        if (!ALLOWED_HOSTS.has(videoURL.hostname)) {
+          return sendJSON(res, 400, {
+            success: false,
+            message:
+              "This video host is not allowed. Use an authorized direct MP4 URL."
+          });
+        }
+
+        const downloadURL =
+          `/api/fetch?url=${encodeURIComponent(videoURL.toString())}`;
+
+        return sendJSON(res, 200, {
+          success: true,
+          downloadUrl: downloadURL
+        });
+
+      } catch (error) {
+        return sendJSON(res, 400, {
+          success: false,
+          message: "Invalid video URL."
+        });
+      }
+    });
+
+    return;
+  }
+
+  // GET /api/fetch
+  if (req.method === "GET" && req.url.startsWith("/api/fetch")) {
+    try {
+      const requestURL = new URL(
+        req.url,
+        `http://${req.headers.host}`
+      );
+
+      const target = requestURL.searchParams.get("url");
+
+      if (!target) {
+        return sendText(res, 400, "Video URL is required");
+      }
+
+      const videoURL = new URL(target);
+
+      if (videoURL.protocol !== "https:") {
+        return sendText(res, 400, "Only HTTPS URLs are allowed");
+      }
+
+      if (!ALLOWED_HOSTS.has(videoURL.hostname)) {
+        return sendText(res, 403, "Video host is not allowed");
+      }
+
+      const response = await fetch(videoURL);
+
+      if (!response.ok || !response.body) {
+        return sendText(
+          res,
+          502,
+          "Video could not be fetched"
+        );
+      }
+
+      res.writeHead(200, {
+        "Content-Type":
+          response.headers.get("content-type") || "video/mp4",
+
+        "Content-Disposition":
+          'attachment; filename="video.mp4"',
+
+        "Access-Control-Allow-Origin": "*"
+      });
+
+      Readable.fromWeb(response.body).pipe(res);
+
+    } catch (error) {
+      console.error("Download error:", error);
+
+      if (!res.headersSent) {
+        return sendText(
+          res,
+          500,
+          "Download failed on server"
+        );
+      }
+    }
+
+    return;
+  }
+
+  sendText(res, 404, "Not Found");
+});
+
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
