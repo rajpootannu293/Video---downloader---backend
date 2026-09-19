@@ -4,6 +4,19 @@ const app = express();
 
 app.use(express.json());
 
+// CORS
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("Video Downloader Backend is running!");
 });
@@ -25,15 +38,11 @@ app.post("/api/download", (req, res) => {
       videoUrl.protocol !== "http:" &&
       videoUrl.protocol !== "https:"
     ) {
-      return res.status(400).json({
-        success: false,
-        message: "Only HTTP and HTTPS URLs are allowed"
-      });
+      throw new Error("Invalid URL");
     }
 
     res.json({
       success: true,
-      message: "Video URL is ready",
       downloadUrl: videoUrl.toString()
     });
 
