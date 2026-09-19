@@ -6,6 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Home / Health Check
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -13,6 +14,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// Download API
 app.post("/api/download", (req, res) => {
   const { url } = req.body;
 
@@ -26,15 +28,20 @@ app.post("/api/download", (req, res) => {
   try {
     const videoUrl = new URL(url);
 
+    // Only HTTP/HTTPS URLs are accepted
     if (
       videoUrl.protocol !== "http:" &&
       videoUrl.protocol !== "https:"
     ) {
-      throw new Error("Invalid URL");
+      return res.status(400).json({
+        success: false,
+        message: "Only HTTP and HTTPS URLs are allowed"
+      });
     }
 
     res.json({
       success: true,
+      message: "Video URL is ready",
       downloadUrl: videoUrl.toString()
     });
 
@@ -46,6 +53,7 @@ app.post("/api/download", (req, res) => {
   }
 });
 
+// Render provides the PORT
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
