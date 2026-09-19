@@ -1,10 +1,16 @@
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Video Downloader Backend is running!");
+  res.json({
+    success: true,
+    message: "Video Downloader Backend is running!"
+  });
 });
 
 app.post("/api/download", (req, res) => {
@@ -20,7 +26,10 @@ app.post("/api/download", (req, res) => {
   try {
     const videoUrl = new URL(url);
 
-    if (videoUrl.protocol !== "http:" && videoUrl.protocol !== "https:") {
+    if (
+      videoUrl.protocol !== "http:" &&
+      videoUrl.protocol !== "https:"
+    ) {
       throw new Error("Invalid URL");
     }
 
