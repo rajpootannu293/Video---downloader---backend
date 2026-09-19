@@ -1,173 +1,52 @@
-const http = require("http");
-const { URL } = require("url");
-const { Readable } = require("stream");
+const express = require('express');
+const cors = require('cors');
+const ytDlp = require('yt-dlp-exec');
 
-const PORT = process.env.PORT || 3000;
+const app = express();
 
-// अभी testing के लिए केवल इस authorized direct-video host को allow किया गया है
-const ALLOWED_HOSTS = new Set([
-  "interactive-examples.mdn.mozilla.net"
-]);
+app.use(cors());
+app.use(express.json());
 
-function sendJSON(res, statusCode, data) {
-  const body = JSON.stringify(data);
+app.post('/api/get-reel', async (req, res) => {
+    const { reelUrl } = req.body;
 
-  res.writeHead(statusCode, {
-    "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Content-Length": Buffer.byteLength(body)
-  });
-
-  res.end(body);
-}
-
-function sendText(res, statusCode, text) {
-  res.writeHead(statusCode, {
-    "Content-Type": "text/plain; charset=utf-8",
-    "Access-Control-Allow-Origin": "*"
-  });
-
-  res.end(text);
-}
-
-const server = http.createServer(async (req, res) => {
-  // CORS
-  if (req.method === "OPTIONS") {
-    res.writeHead(204, {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-    });
-    return res.end();
-  }
-
-  // Home
-  if (req.method === "GET" && req.url === "/") {
-    return sendText(
-      res,
-      200,
-      "Video Downloader Backend is running!"
-    );
-  }
-
-  // POST /api/download
-  if (req.method === "POST" && req.url === "/api/download") {
-    let body = "";
-
-    req.on("data", chunk => {
-      body += chunk.toString();
-
-      // Request बहुत बड़ा होने से रोकना
-      if (body.length > 10000) {
-        req.destroy();
-      }
-    });
-
-    req.on("end", () => {
-      try {
-        const data = JSON.parse(body);
-        const videoURL = new URL(data.url);
-
-        if (videoURL.protocol !== "https:") {
-          return sendJSON(res, 400, {
-            success: false,
-            message: "Only HTTPS video URLs are allowed."
-          });
-        }
-
-        if (!ALLOWED_HOSTS.has(videoURL.hostname)) {
-          return sendJSON(res, 400, {
-            success: false,
-            message:
-              "This video host is not allowed. Use an authorized direct MP4 URL."
-          });
-        }
-
-        const downloadURL =
-          `/api/fetch?url=${encodeURIComponent(videoURL.toString())}`;
-
-        return sendJSON(res, 200, {
-          success: true,
-          downloadUrl: downloadURL
-        });
-
-      } catch (error) {
-        return sendJSON(res, 400, {
-          success: false,
-          message: "Invalid video URL."
-        });
-      }
-    });
-
-    return;
-  }
-
-  // GET /api/fetch
-  if (req.method === "GET" && req.url.startsWith("/api/fetch")) {
-    try {
-      const requestURL = new URL(
-        req.url,
-        `http://${req.headers.host}`
-      );
-
-      const target = requestURL.searchParams.get("url");
-
-      if (!target) {
-        return sendText(res, 400, "Video URL is required");
-      }
-
-      const videoURL = new URL(target);
-
-      if (videoURL.protocol !== "https:") {
-        return sendText(res, 400, "Only HTTPS URLs are allowed");
-      }
-
-      if (!ALLOWED_HOSTS.has(videoURL.hostname)) {
-        return sendText(res, 403, "Video host is not allowed");
-      }
-
-      const response = await fetch(videoURL);
-
-      if (!response.ok || !response.body) {
-        return sendText(
-          res,
-          502,
-          "Video could not be fetched"
-        );
-      }
-
-      res.writeHead(200, {
-        "Content-Type":
-          response.headers.get("content-type") || "video/mp4",
-
-        "Content-Disposition":
-          'attachment; filename="video.mp4"',
-
-        "Access-Control-Allow-Origin": "*"
-      });
-
-      Readable.fromWeb(response.body).pipe(res);
-
-    } catch (error) {
-      console.error("Download error:", error);
-
-      if (!res.headersSent) {
-        return sendText(
-          res,
-          500,
-          "Download failed on server"
-        );
-      }
+    if (!reelUrl) {
+        return res.status(400).json({ success: false, message: 'URL zaroori hai.' });
     }
 
-    return;
-  }
+    try {
+        const output = await ytDlp(reelUrl, {
+            dumpSingleJson: true,
+            noCheckCertificates: true,
+            noWarnings: true,
+            preferFreeFormats: true,
+            addHeader: [
+                'referer:https://www.instagram.com/',
+                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            ]
+        });
 
-  sendText(res, 404, "Not Found");
+        const directMp4Url = output.url || (output.formats && output.formats.length > 0 ? output.formats[0].url : null);
+
+        if (!directMp4Url) {
+            return res.status(404).json({ success: false, message: 'Download link nahi mila.' });
+        }
+
+        return res.json({
+            success: true,
+            data: {
+                title: output.title || 'Instagram Reel',
+                thumbnail: output.thumbnail || null,
+                downloadUrl: directMp4Url
+            }
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server error ya Private post.' });
+    }
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
