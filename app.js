@@ -1,4 +1,4 @@
-const express = require('express');
+⁷const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 
@@ -22,9 +22,9 @@ app.post('/api/get-reel', async (req, res) => {
             params: { url: reelUrl },
             headers: {
                 // NEECHE APNI RAPIDAPI KEY CHIPAEYIN
-                'x-rapidapi-key': 'de9ef331d3msh84dc97faf8d70cdp1...',
+                'x-rapidapi-key': 'de9ef331d3msh84dc97faf8d70cdp1630a9jsn0cdefc672446',
                 'x-rapidapi-host': 'instagram-downloader-download-instagram-videos-stories1.p.rapidapi.com'
-            }
+            }return res.status(400).json({ success: false, message: 'URL zaroori hai.' });
         };
 
         const response = await axios.request(options);
