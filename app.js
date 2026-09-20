@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const ytdlp = require('yt-dlp-exec');
 const axios = require('axios');
 
 const app = express();
@@ -16,38 +15,39 @@ app.post('/api/get-reel', async (req, res) => {
     }
 
     try {
-        const output = await ytdlp(reelUrl, {
-            dumpSingleJson: true,
-            noCheckCertificates: true,
-            noWarnings: true,
-            preferFreeFormats: true,
-            addHeader: [
-                'referer:https://www.instagram.com/',
-                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            ]
-        });
+        // RapidAPI ki madad se video link lena
+        const options = {
+            method: 'GET',
+            url: 'https://instagram-downloader-download-instagram-videos-stories1.p.rapidapi.com/index',
+            params: { url: reelUrl },
+            headers: {
+                // NEECHE APNI RAPIDAPI KEY CHIPAEYIN
+                'x-rapidapi-key': 'de9ef331d3msh84dc97faf8d70cdp1...',
+                'x-rapidapi-host': 'instagram-downloader-download-instagram-videos-stories1.p.rapidapi.com'
+            }
+        };
 
-        const directMp4Url = output.url || (output.formats && output.formats.length > 0 ? output.formats[0].url : null);
+        const response = await axios.request(options);
+        const downloadUrl = response.data.media || response.data.download_url || (Array.isArray(response.data) ? response.data[0]?.url : null);
 
-        if (!directMp4Url) {
+        if (!downloadUrl) {
             return res.status(404).json({ success: false, message: 'Download link nahi mila.' });
         }
 
         return res.json({
             success: true,
             data: {
-                title: output.title || 'Instagram Reel',
-                thumbnail: output.thumbnail || null,
-                downloadUrl: directMp4Url
+                downloadUrl: downloadUrl
             }
         });
 
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Server error ya Private post.' });
+        console.error('API Error:', error.message);
+        return res.status(500).json({ success: false, message: 'Server error ya Invalid URL.' });
     }
 });
 
-// Proxy Route - CORS aur Blank Screen dikkat dur karne ke liye
+// Proxy Route - Video File Stream karne ke liye
 app.get('/api/download-proxy', async (req, res) => {
     try {
         const videoUrl = req.query.url;
@@ -58,19 +58,15 @@ app.get('/api/download-proxy', async (req, res) => {
         const response = await axios({
             method: 'get',
             url: videoUrl,
-            responseType: 'stream',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
+            responseType: 'stream'
         });
 
-        res.setHeader('Content-Disposition', 'attachment; filename="instagram-reel.mp4"');
+        res.setHeader('Content-Disposition', 'attachment; filename="reel.mp4"');
         res.setHeader('Content-Type', 'video/mp4');
 
         response.data.pipe(res);
     } catch (error) {
-        console.error('Proxy Error:', error.message);
-        res.status(500).send('Video download me dikkat aayi.');
+        res.status(500).send('Video download karne me dikkat aayi.');
     }
 });
 
