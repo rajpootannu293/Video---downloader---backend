@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// RapidAPI Instagram Fetcher Bypass Route
+// Cobalt Direct Bypass Route (No API Key Required)
 app.post('/api/get-reel', async (req, res) => {
     const { reelUrl } = req.body;
 
@@ -16,38 +16,34 @@ app.post('/api/get-reel', async (req, res) => {
     }
 
     try {
-        const options = {
-            method: 'GET',
-            url: 'https://instagram-looter2.p.rapidapi.com/reel',
-            params: { url: reelUrl },
+        const cleanUrl = reelUrl.split('?')[0];
+
+        // Public Cobalt Engine Request
+        const response = await axios.post('https://api.cobalt.tools/api/json', {
+            url: cleanUrl
+        }, {
             headers: {
-                // Aapki Original RapidAPI Key Yahan Set Kar Di Gayi Hai
-                'x-rapidapi-key': 'de9ef331d3msh84dc97faf8d70cdp1630a9jsn0cdefc672446',
-                'x-rapidapi-host': 'instagram-looter2.p.rapidapi.com'
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-        };
-
-        const response = await axios.request(options);
-        
-        // Video URL extraction
-        const downloadUrl = response.data.download_url || response.data.media || (response.data[0] && response.data[0].url);
-
-        if (!downloadUrl) {
-            return res.status(404).json({ success: false, message: 'Video link nahi mil saka.' });
-        }
-
-        return res.json({
-            success: true,
-            data: { downloadUrl: downloadUrl }
         });
 
+        if (response.data && response.data.url) {
+            return res.json({
+                success: true,
+                data: { downloadUrl: response.data.url }
+            });
+        } else {
+            return res.status(404).json({ success: false, message: 'Video URL fetch nahi ho saka.' });
+        }
+
     } catch (error) {
-        console.error('API Error:', error.message);
-        return res.status(500).json({ success: false, message: 'Backend Sync Error! RapidAPI limit ya endpoint check karein.' });
+        console.error('Bypass Error:', error.message);
+        return res.status(500).json({ success: false, message: 'Server busy hai. Dobara try karein.' });
     }
 });
 
-// Direct Video Stream Proxy Route (Blank Screen Problem Solve Karne Ke Liye)
+// Proxy Stream Route (Video download ke liye)
 app.get('/api/download-proxy', async (req, res) => {
     try {
         const videoUrl = req.query.url;
@@ -56,10 +52,7 @@ app.get('/api/download-proxy', async (req, res) => {
         const response = await axios({
             method: 'get',
             url: videoUrl,
-            responseType: 'stream',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
+            responseType: 'stream'
         });
 
         res.setHeader('Content-Disposition', 'attachment; filename="Instagram_Reel.mp4"');
@@ -67,7 +60,7 @@ app.get('/api/download-proxy', async (req, res) => {
 
         response.data.pipe(res);
     } catch (error) {
-        res.status(500).send('Video stream karne me dikkat aayi.');
+        res.status(500).send('Stream Error');
     }
 });
 
