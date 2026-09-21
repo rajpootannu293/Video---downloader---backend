@@ -18,31 +18,42 @@ def download():
 
     clean_url = video_url.strip()
 
-    # YouTube Shorts & Bot-blocking bypass options
+    # Base configuration
     ydl_opts = {
         'format': 'best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['ios', 'tv', 'web_embedded']
-            }
-        },
-        'http_headers': {
+    }
+
+    # Platform-specific custom headers and client settings
+    if 'instagram.com' in clean_url:
+        ydl_opts['http_headers'] = {
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
         }
-    }
+    elif 'youtube.com' in clean_url or 'youtu.be' in clean_url:
+        ydl_opts['extractor_args'] = {
+            'youtube': {
+                'player_client': ['android', 'ios', 'web']
+            }
+        }
+        ydl_opts['http_headers'] = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        }
+    else:
+        ydl_opts['http_headers'] = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(clean_url, download=False)
             
             if not info:
-                return jsonify({'status': 'error', 'message': 'वीडियो डेटा नहीं मिल सका'}), 404
+                return jsonify({'status': 'error', 'message': 'वीडियो डेटा प्राप्त नहीं हुआ'}), 404
 
             download_url = None
             if 'entries' in info and info['entries']:
@@ -61,11 +72,11 @@ def download():
                     'download_url': download_url
                 })
             else:
-                return jsonify({'status': 'error', 'message': 'डायरेक्ट डाउनलोड लिंक प्राप्त नहीं हुआ'}), 404
+                return jsonify({'status': 'error', 'message': 'डायरेक्ट डाउनलोड लिंक नहीं मिल सका'}), 404
 
     except Exception as e:
         print("yt-dlp error:", str(e))
-        return jsonify({'status': 'error', 'message': 'वीडियो डाउनलोड करने में असमर्थ।'}), 500
+        return jsonify({'status': 'error', 'message': 'वीडियो प्रोसेसिंग में त्रुटि हुई।'}), 500
 
 
 @app.route('/fetch-video', methods=['GET'])
@@ -75,7 +86,7 @@ def fetch_video():
         return "URL required", 400
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
     }
     
     try:
