@@ -1,68 +1,33 @@
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import yt_dlp
 
-const app = express();
+app = Flask(__name__)
+CORS(app) # Allow CORS for frontend
 
-app.use(cors());
-app.use(express.json());
+@app.route('/download', methods=['GET'])
+def download():
+    video_url = request.args.get('url')
+    if not video_url:
+        return jsonify({'error': 'URL is required'}), 400
 
-// Cobalt Direct Bypass Route (No API Key Required)
-app.post('/api/get-reel', async (req, res) => {
-    const { reelUrl } = req.body;
-
-    if (!reelUrl) {
-        return res.status(400).json({ success: false, message: 'URL zaroori hai.' });
-    }
-
-    try {
-        const cleanUrl = reelUrl.split('?')[0];
-
-        // Public Cobalt Engine Request
-        const response = await axios.post('https://api.cobalt.tools/api/json', {
-            url: cleanUrl
-        }, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.data && response.data.url) {
-            return res.json({
-                success: true,
-                data: { downloadUrl: response.data.url }
-            });
-        } else {
-            return res.status(404).json({ success: false, message: 'Video URL fetch nahi ho saka.' });
+    try:
+        ydl_opts = {
+            'format': 'best',
+            'quiet': True,
+            'no_warnings': True,
         }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=False)
+            download_url = info.get('url')
+            
+            return jsonify({
+                'status': 'success',
+                'title': info.get('title', 'Instagram Video'),
+                'download_url': download_url
+            })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-    } catch (error) {
-        console.error('Bypass Error:', error.message);
-        return res.status(500).json({ success: false, message: 'Server busy hai. Dobara try karein.' });
-    }
-});
-
-// Proxy Stream Route (Video download ke liye)
-app.get('/api/download-proxy', async (req, res) => {
-    try {
-        const videoUrl = req.query.url;
-        if (!videoUrl) return res.status(400).send('URL missing');
-
-        const response = await axios({
-            method: 'get',
-            url: videoUrl,
-            responseType: 'stream'
-        });
-
-        res.setHeader('Content-Disposition', 'attachment; filename="Instagram_Reel.mp4"');
-        res.setHeader('Content-Type', 'video/mp4');
-
-        response.data.pipe(res);
-    } catch (error) {
-        res.status(500).send('Stream Error');
-    }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server live on port ${PORT}`));
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
