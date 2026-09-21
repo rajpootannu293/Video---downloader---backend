@@ -18,18 +18,16 @@ def download():
 
     clean_url = video_url.strip()
 
-    # YouTube Bot detection bypass setup
+    # yt-dlp Configuration optimized for Instagram, YouTube, Facebook & TikTok
     ydl_opts = {
-        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+        'format': 'best',
         'quiet': True,
         'no_warnings': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios', 'web']
-            }
-        },
+        'nocheckcertificate': True,
+        'ignoreerrors': True,
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
         }
     }
@@ -38,13 +36,16 @@ def download():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(clean_url, download=False)
             
+            if not info:
+                return jsonify({'status': 'error', 'message': 'वीडियो डेटा नहीं मिल सका'}), 404
+
             download_url = None
             if 'entries' in info and len(info['entries']) > 0:
                 download_url = info['entries'][0].get('url')
             else:
                 download_url = info.get('url')
 
-            title = info.get('title', 'Video Download')
+            title = info.get('title', 'Downloaded Video')
             thumbnail = info.get('thumbnail', '')
 
             if download_url:
@@ -55,11 +56,11 @@ def download():
                     'download_url': download_url
                 })
             else:
-                return jsonify({'status': 'error', 'message': 'Direct video URL not found'}), 404
+                return jsonify({'status': 'error', 'message': 'डायरेक्ट डाउनलोड लिंक प्राप्त नहीं हुआ'}), 404
 
     except Exception as e:
         print("yt-dlp error:", str(e))
-        return jsonify({'status': 'error', 'message': 'Video link soft/private a ni e.'}), 500
+        return jsonify({'status': 'error', 'message': 'वीडियो डाउनलोड करने में असमर्थ। लिंक जांचें।'}), 500
 
 
 @app.route('/fetch-video', methods=['GET'])
@@ -73,7 +74,7 @@ def fetch_video():
     }
     
     try:
-        req = requests.get(video_url, headers=headers, stream=True, timeout=15)
+        req = requests.get(video_url, headers=headers, stream=True, timeout=20)
         content_length = req.headers.get('content-length')
         
         response_headers = {
