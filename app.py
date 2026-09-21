@@ -43,7 +43,7 @@ def download():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Direct Force Download Endpoint
+# Direct Force Download Endpoint (With Content-Length for Chrome Details Toast)
 @app.route('/fetch-video', methods=['GET'])
 def fetch_video():
     video_url = request.args.get('url')
@@ -54,15 +54,22 @@ def fetch_video():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
     
-    # Stream video directly from Instagram CDN
     req = requests.get(video_url, headers=headers, stream=True)
     
+    # Extract content length if available
+    content_length = req.headers.get('content-length')
+    
+    response_headers = {
+        "Content-Disposition": "attachment; filename=instagram_video.mp4",
+        "Content-Type": "video/mp4"
+    }
+    
+    if content_length:
+        response_headers["Content-Length"] = content_length
+
     return Response(
         req.iter_content(chunk_size=1024*1024),
-        content_type='video/mp4',
-        headers={
-            "Content-Disposition": "attachment; filename=instagram_video.mp4"
-        }
+        headers=response_headers
     )
 
 if __name__ == '__main__':
