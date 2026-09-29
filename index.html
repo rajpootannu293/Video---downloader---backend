@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MT Download - Instagram, Facebook & TikTok Downloader</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-hover: #2563eb;
+            --gradient-accent: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Hero Section */
+
+        .hero {
+            padding: 4rem 8% 6rem 8%;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            gap: 3rem;
+            background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle-platforms {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+
+        /* Input Box */
+
+        .input-box-wrapper {
+            background: white;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            max-width: 550px;
+        }
+
+        .input-box-wrapper i {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            padding: 0 15px;
+        }
+
+        .input-box-wrapper input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .btn-download {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 5px 7px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 0.55rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Result Section */
+
+        .result-container {
+            margin-top: 2rem;
+            max-width: 550px;
+            display: none;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .result-card img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .result-card h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        /* Save MP4 Button */
+
+        .download-action-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .download-action-btn:hover {
+            background: #059669;
+        }
+
+        /* Quality Options */
+
+        .quality-options {
+            display: none;
+            margin-top: 12px;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .quality-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .normal-quality {
+            background: #0f172a;
+        }
+
+        .normal-quality:hover {
+            background: #1e293b;
+        }
+
+        .hd-quality {
+            background: #29445c;
+        }
+
+        .hd-quality:hover {
+            background: #1e3a52;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Phone Illustration */
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 36px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border: 8px solid #ffffff;
+        }
+
+        /* Platform Selection Cards */
+
+        .platforms-section {
+            padding: 5rem 8%;
+            text-align: center;
+            background: white;
+        }
+
+        .platforms-section h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .platforms-section p {
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .platform-card {
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .platform-card.insta {
+            background: #fdf2f8;
+        }
+
+        .platform-card.fb {
+            background: #eff6ff;
+        }
+
+        .platform-card.tiktok {
+            background: #f0fdf4;
+        }
+
+        .platform-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            font-size: 2.2rem;
+            color: white;
+        }
+
+        .platform-card.insta .platform-icon {
+            background: linear-gradient(45deg, #f09433, #bc1888);
+        }
+
+        .platform-card.fb .platform-icon {
+            background: #1877f2;
+        }
+
+        .platform-card.tiktok .platform-icon {
+            background: #000000;
+        }
+
+        .platform-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .platform-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .platform-card.insta .card-btn {
+            background: #d946ef;
+        }
+
+        .platform-card.fb .card-btn {
+            background: #3b82f6;
+        }
+
+        .platform-card.tiktok .card-btn {
+            background: #0f766e;
+        }
+
+        /* Features */
+
+        .features-bar {
+            padding: 3rem 8%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .feature-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .feature-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 4rem 8% 2rem 8%;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand p {
+            color: #94a3b8;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-links h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-links ul li a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icons a {
+            width: 38px;
+            height: 38px;
+            background: #1e293b;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary-blue);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #1e293b;
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 900px) {
+
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-desc,
+            .input-box-wrapper,
+            .result-container {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav>
+
+        <a href="#" class="logo">
+
+            <span class="logo-icon">MT</span>
+
+            <span>MT Download</span>
+
+        </a>
+
+        <ul class="nav-links">
+
+            <li>
+                <a href="#" class="active">Home</a>
+            </li>
+
+            <li>
+                <a href="#how-it-works">How It Works</a>
+            </li>
+
+            <li>
+                <a href="#faq">FAQ</a>
+            </li>
+
+            <li>
+                <a href="#contact">Contact</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- Hero Section -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="badge">
+                ⚡ Fast • Free • No Sign Up
+            </span>
+
+            <h1>
+                Download <span>Videos & Reels</span>
+            </h1>
+
+            <div class="subtitle-platforms">
+                Instagram • Facebook • TikTok
+            </div>
+
+            <p class="hero-desc">
+                Paste the video link from Instagram, Facebook or TikTok
+                and download it in high quality. It's fast, easy and free!
+            </p>
+
+
+            <!-- URL INPUT -->
+
+            <div class="input-box-wrapper">
+
+                <i class="fa-solid fa-link"></i>
+
+                <input
+                    type="text"
+                    id="videoUrl"
+                    placeholder="Paste video link here..."
+                >
+
+                <button
+                    class="btn-download"
+                    onclick="downloadVideo()"
+                >
+
+                    <i class="fa-solid fa-download"></i>
+
+                    <span id="downloadText">
+                        Download
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                class="error-msg"
+                id="errorMsg"
+            ></div>
+
+
+            <!-- RESULT -->
+
+            <div
+                class="result-container"
+                id="resultContainer"
+            >
+
+                <div class="result-card">
+
+
+                    <!-- Thumbnail -->
+
+                    <img
+                        id="thumbImg"
+                        src=""
+                        alt="Thumbnail"
+                    >
+
+
+                    <!-- Video Title -->
+
+                    <h3 id="videoTitle">
+                        Video Title
+                    </h3>
+
+
+                    <!-- SAVE MP4 -->
+
+                    <button
+                        id="dlBtn"
+                        class="download-action-btn"
+                        type="button"
+                        onclick="showQualityOptions()"
+                    >
+
+                        <i class="fa-solid fa-file-arrow-down"></i>
+
+                        Save MP4 Video
+
+                    </button>
+
+
+                    <!-- QUALITY OPTIONS -->
+
+                    <div
+                        class="quality-options"
+                        id="qualityOptions"
+                    >
+
+                        <!-- NORMAL QUALITY -->
+
+                        <a
+                            id="normalBtn"
+                            class="quality-btn normal-quality"
+                            href="#"
+                        >
+
+                            Download Video in Normal Quality
+
+                        </a>
+
+
+                        <!-- HD QUALITY -->
+
+                        <a
+                            id="hdBtn"
+                            class="quality-btn hd-quality"
+                            href="#"
+                        >
+
+                            Download Video in HD Quality
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Phone Illustration -->
+
+        <div class="hero-image">
+
+            <img
+                src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500&q=80"
+                class="phone-mockup"
+                alt="Preview"
+            >
+
+        </div>
+
+    </section>
+
+
+    <!-- Choose Platform -->
+
+    <section
+        class="platforms-section"
+        id="how-it-works"
+    >
+
+        <h2>
+            Choose Your Platform
+        </h2>
+
+        <p>
+            Select the platform and paste the video link above to get started.
+        </p>
+
+
+        <div class="cards-grid">
+
+
+            <!-- Instagram -->
+
+            <div class="platform-card insta">
+
+                <div class="platform-icon">
+
+                    <i class="fa-brands fa-instagram"></i>
+
+                </div>
+
+                <h3>
+                    Instagram
+                </h3>
+
+                <p>
+                    Download Reels, Videos, IGTV and more.
+                </p>
+
+                <a
+                    href="#videoUrl"
+                    class="card-btn"
+                >
+
+                    Get Started
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+            <!-- Facebook -->
+
+            <div class="platform-card fb">
+
+                <div class="platform-icon">
+
+                    <i class="fa-brands fa-facebook-f"></i>
+
+                </div>
+
+                <h3>
+                    Facebook
+                </h3>
+
+                <p>
+                    Download videos from posts, pages and groups.
+                </p>
+
+                <a
+                    href="#videoUrl"
+                    class="card-btn"
+                >
+
+                    Get Started
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+            <!-- TikTok -->
+
+            <div class="platform-card tiktok">
+
+                <div class="platform-icon">
+
+                    <i class="fa-brands fa-tiktok"></i>
+
+                </div>
+
+                <h3>
+                    TikTok
+                </h3>
+
+                <p>
+                    Download videos, reels and more.
+                </p>
+
+                <a
+                    href="#videoUrl"
+                    class="card-btn"
+                >
+
+                    Get Started
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Features Bar -->
+
+    <section class="features-bar">
+
+
+        <div class="feature-item">
+
+            <div
+                class="feature-icon"
+                style="background: #a855f7;"
+            >
+
+                <i class="fa-solid fa-bolt"></i>
+
+            </div>
+
+            <h4>
+                Fast & Reliable
+            </h4>
+
+            <p>
+                Get your videos in seconds.
+            </p>
+
+        </div>
+
+
+        <div class="feature-item">
+
+            <div
+                class="feature-icon"
+                style="background: #10b981;"
+            >
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+            <h4>
+                High Quality
+            </h4>
+
+            <p>
+                Download in HD whenever possible.
+            </p>
+
+        </div>
+
+
+        <div class="feature-item">
+
+            <div
+                class="feature-icon"
+                style="background: #3b82f6;"
+            >
+
+                <i class="fa-solid fa-mobile-screen"></i>
+
+            </div>
+
+            <h4>
+                Works on All Devices
+            </h4>
+
+            <p>
+                Use it on mobile, tablet or desktop.
+            </p>
+
+        </div>
+
+
+        <div class="feature-item">
+
+            <div
+                class="feature-icon"
+                style="background: #ec4899;"
+            >
+
+                <i class="fa-solid fa-infinity"></i>
+
+            </div>
+
+            <h4>
+                100% Free
+            </h4>
+
+            <p>
+                No hidden charges. No sign up required.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-grid">
+
+
+            <div class="footer-brand">
+
+                <a
+                    href="#"
+                    class="logo"
+                    style="color: white;"
+                >
+
+                    <span class="logo-icon">
+                        MT
+                    </span>
+
+                    <span>
+                        MT Download
+                    </span>
+
+                </a>
+
+                <p>
+                    Your all-in-one social media video downloader.
+                    <br>
+                    Instagram • Facebook • TikTok
+                </p>
+
+            </div>
+
+
+            <div
+                class="footer-links"
+                id="faq"
+            >
+
+                <h4>
+                    Quick Links
+                </h4>
+
+                <ul>
+
+                    <li>
+                        <a href="#">
+                            Home
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#">
+                            How It Works
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#">
+                            FAQ
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div
+                class="footer-links"
+                id="contact"
+            >
+
+                <h4>
+                    Follow Us
+                </h4>
+
+                <div class="social-icons">
+
+                    <a href="#">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 MT Download. All rights reserved.
+            </p>
+
+            <p>
+                Made with ❤️ for video lovers.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+
+    <script>
+
+        // Render Backend URL
+
+        const BACKEND_URL =
+            "https://video-downloader-backend-8cbh.onrender.com";
+
+
+        // ==============================
+        // DOWNLOAD VIDEO INFORMATION
+        // ==============================
+
+        async function downloadVideo() {
+
+            const urlInput =
+                document
+                .getElementById("videoUrl")
+                .value
+                .trim();
+
+            const errorMsg =
+                document.getElementById("errorMsg");
+
+            const resultContainer =
+                document.getElementById("resultContainer");
+
+            const downloadText =
+                document.getElementById("downloadText");
+
+
+            // Quality options को पहले छुपाएं
+
+            document
+                .getElementById("qualityOptions")
+                .style.display = "none";
+
+
+            // URL खाली है
+
+            if (!urlInput) {
+
+                errorMsg.innerText =
+                    "Kripya video ka URL paste karein!";
+
+                errorMsg.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            // Reset
+
+            errorMsg.style.display =
+                "none";
+
+            resultContainer.style.display =
+                "none";
+
+            downloadText.innerText =
+                "Searching...";
+
+
+            try {
+
+                // Backend को request
+
+                const response =
+                    await fetch(
+                        `${BACKEND_URL}/download?url=${encodeURIComponent(urlInput)}`
+                    );
+
+
+                // JSON response
+
+                const data =
+                    await response.json();
+
+
+                // Success
+
+                if (data.status === "success") {
+
+
+                    // Thumbnail
+
+                    document
+                        .getElementById("thumbImg")
+                        .src =
+                        data.thumbnail ||
+                        "https://via.placeholder.com/400x200";
+
+
+                    // Title
+
+                    document
+                        .getElementById("videoTitle")
+                        .innerText =
+                        data.title ||
+                        "Video";
+
+
+                    // Backend download URL
+
+                    const proxyDownloadUrl =
+                        `${BACKEND_URL}/fetch-video?url=${encodeURIComponent(data.download_url)}`;
+
+
+                    // Normal Quality
+
+                    document
+                        .getElementById("normalBtn")
+                        .href =
+                        proxyDownloadUrl;
+
+
+                    // HD Quality
+                    // फिलहाल backend एक ही URL दे रहा है,
+                    // इसलिए HD भी इसी URL से जुड़ा है।
+
+                    document
+                        .getElementById("hdBtn")
+                        .href =
+                        proxyDownloadUrl;
+
+
+                    // Result दिखाएं
+
+                    resultContainer.style.display =
+                        "block";
+
+
+                } else {
+
+                    errorMsg.innerText =
+                        data.message ||
+                        "Video search nahi ho saka!";
+
+                    errorMsg.style.display =
+                        "block";
+
+                }
+
+
+            } catch (err) {
+
+                console.error(err);
+
+                errorMsg.innerText =
+                    "Server error! Kripya thodi der baad prayas karein.";
+
+                errorMsg.style.display =
+                    "block";
+
+            } finally {
+
+                downloadText.innerText =
+                    "Download";
+
+            }
+
+        }
+
+
+        // ==============================
+        // SHOW / HIDE QUALITY OPTIONS
+        // ==============================
+
+        function showQualityOptions() {
+
+            const qualityOptions =
+                document.getElementById(
+                    "qualityOptions"
+                );
+
+
+            if (
+                qualityOptions.style.display ===
+                "flex"
+            ) {
+
+                // Hide
+
+                qualityOptions.style.display =
+                    "none";
+
+            } else {
+
+                // Show
+
+                qualityOptions.style.display =
+                    "flex";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
