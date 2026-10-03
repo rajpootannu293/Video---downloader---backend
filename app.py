@@ -8,10 +8,10 @@ app = Flask(__name__)
 CORS(app)
 
 # ---------------- Proxy Settings ----------------
-PROXY_USER = "aapka_proxy_username"
-PROXY_PASS = "aapka_proxy_password"
-PROXY_HOST = "aapka_proxy_host"  # e.g., p.webshare.io
-PROXY_PORT = "aapka_proxy_port"  # e.g., 8080
+PROXY_USER = "zivhkhbm"
+PROXY_PASS = "46c1nmnz4r1o"
+PROXY_HOST = "31.59.20.176"  # e.g., p.webshare.io
+PROXY_PORT = "6754"  # e.g., 8080
 
 # Proxy URL String (Agar proxy hai toh ye active ho jayega)
 PROXY_URL = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}" if PROXY_HOST else None
