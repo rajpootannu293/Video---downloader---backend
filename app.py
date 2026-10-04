@@ -3,6 +3,9 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
 import requests
+from fake_useragent import UserAgent
+
+ua = UserAgent()
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +32,7 @@ def download():
         return jsonify({"status": "error", "message": "URL is required!"}), 400
 
     clean_url = video_url.strip()
+      random_ua = ua.random
 
     # Fast Speed yt-dlp Configuration
     ydl_opts = {
@@ -39,7 +43,7 @@ def download():
         'ignoreerrors': True,
         'concurrent_fragment_downloads': 5, # Concurrent chunk downloading for high speed
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': random_ua (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Sec-Fetch-Mode': 'navigate',
@@ -92,10 +96,12 @@ def download():
 def fetch_video():
     video_url = request.args.get('url')
     if not video_url:
+            random_ua = ua.random
+
         return "URL required", 400
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                'User-Agent': random_ua(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 
     try:
