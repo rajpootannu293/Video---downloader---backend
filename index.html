@@ -17,35 +17,9 @@
             --primary-blue: #3b82f6;
             --primary-hover: #2563eb;
             --gradient-accent: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
-
             --text-main: #0f172a;
             --text-muted: #64748b;
-
             --bg-light: #f8fafc;
-            --bg-white: #ffffff;
-            --bg-section: #ffffff;
-            --border: #e2e8f0;
-            --input-bg: #ffffff;
-            --hero-bg: radial-gradient(circle at top left, #eff6ff, #ffffff);
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
-
-        /* ==============================
-           DARK MODE
-        ============================== */
-
-        body.dark-mode {
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-
-            --bg-light: #0f172a;
-            --bg-white: #1e293b;
-            --bg-section: #111827;
-            --border: #334155;
-            --input-bg: #1e293b;
-
-            --hero-bg: radial-gradient(circle at top left, #172554, #0f172a);
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.35);
         }
 
         * {
@@ -55,37 +29,25 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             background-color: var(--bg-light);
             color: var(--text-main);
             overflow-x: hidden;
-            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ==============================
-           NAVBAR
-        ============================== */
+        /* Navbar */
 
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem 8%;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            padding: 1.5rem 8%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-
-        body.dark-mode nav {
-            background: rgba(15,23,42,0.88);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .logo {
@@ -94,7 +56,7 @@
             gap: 10px;
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--text-main);
+            color: #0f172a;
             text-decoration: none;
         }
 
@@ -105,12 +67,6 @@
             border-radius: 10px;
             font-weight: 900;
             font-size: 1.2rem;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .nav-links {
@@ -131,50 +87,7 @@
             color: var(--primary-blue);
         }
 
-        /* ==============================
-           THEME + LANGUAGE BUTTONS
-        ============================== */
-
-        .control-btn {
-            border: 1px solid var(--border);
-            background: var(--bg-white);
-            color: var(--text-main);
-            height: 40px;
-            border-radius: 10px;
-            padding: 0 11px;
-            cursor: pointer;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.3s;
-        }
-
-        .control-btn:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-        }
-
-        .language-select {
-            border: 1px solid var(--border);
-            background: var(--bg-white);
-            color: var(--text-main);
-            height: 40px;
-            border-radius: 10px;
-            padding: 0 9px;
-            outline: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .language-select option {
-            background: var(--bg-white);
-            color: var(--text-main);
-        }
-
-        /* ==============================
-           HERO
-        ============================== */
+        /* Hero Section */
 
         .hero {
             padding: 4rem 8% 6rem 8%;
@@ -182,7 +95,7 @@
             grid-template-columns: 1.2fr 0.8fr;
             align-items: center;
             gap: 3rem;
-            background: var(--hero-bg);
+            background: radial-gradient(circle at top left, #eff6ff, #ffffff);
         }
 
         .badge {
@@ -194,11 +107,6 @@
             font-size: 0.85rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-        }
-
-        body.dark-mode .badge {
-            background: #082f49;
-            color: #7dd3fc;
         }
 
         .hero h1 {
@@ -217,7 +125,7 @@
         .subtitle-platforms {
             font-size: 1.6rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: #1e293b;
             margin-bottom: 1rem;
         }
 
@@ -228,18 +136,16 @@
             max-width: 500px;
         }
 
-        /* ==============================
-           INPUT
-        ============================== */
+        /* Input Box */
 
         .input-box-wrapper {
-            background: var(--input-bg);
+            background: white;
             padding: 8px;
             border-radius: 16px;
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: flex;
             align-items: center;
-            border: 1px solid var(--border);
+            border: 1px solid #e2e8f0;
             max-width: 550px;
         }
 
@@ -255,12 +161,6 @@
             width: 100%;
             font-size: 1rem;
             color: var(--text-main);
-            background: transparent;
-            direction: ltr;
-        }
-
-        .input-box-wrapper input::placeholder {
-            color: var(--text-muted);
         }
 
         .btn-download {
@@ -284,9 +184,7 @@
             transform: translateY(-2px);
         }
 
-        /* ==============================
-           RESULT
-        ============================== */
+        /* Result Section */
 
         .result-container {
             margin-top: 2rem;
@@ -295,11 +193,11 @@
         }
 
         .result-card {
-            background: var(--bg-white);
+            background: white;
             border-radius: 16px;
             padding: 20px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
             text-align: center;
         }
 
@@ -316,6 +214,8 @@
             margin-bottom: 15px;
             color: var(--text-main);
         }
+
+        /* Save MP4 Button */
 
         .download-action-btn {
             background: #10b981;
@@ -335,6 +235,8 @@
         .download-action-btn:hover {
             background: #059669;
         }
+
+        /* Quality Options */
 
         .quality-options {
             display: none;
@@ -381,9 +283,7 @@
             display: none;
         }
 
-        /* ==============================
-           PHONE
-        ============================== */
+        /* Phone Illustration */
 
         .hero-image {
             position: relative;
@@ -395,18 +295,16 @@
             width: 100%;
             max-width: 320px;
             border-radius: 36px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
             border: 8px solid #ffffff;
         }
 
-        /* ==============================
-           PLATFORM SECTION
-        ============================== */
+        /* Platform Selection Cards */
 
         .platforms-section {
             padding: 5rem 8%;
             text-align: center;
-            background: var(--bg-section);
+            background: white;
         }
 
         .platforms-section h2 {
@@ -415,7 +313,7 @@
             margin-bottom: 0.5rem;
         }
 
-        .platforms-section > p {
+        .platforms-section p {
             color: var(--text-muted);
             margin-bottom: 3rem;
         }
@@ -433,10 +331,6 @@
             transition: 0.3s;
         }
 
-        .platform-card:hover {
-            transform: translateY(-5px);
-        }
-
         .platform-card.insta {
             background: #fdf2f8;
         }
@@ -447,18 +341,6 @@
 
         .platform-card.tiktok {
             background: #f0fdf4;
-        }
-
-        body.dark-mode .platform-card.insta {
-            background: #3b1731;
-        }
-
-        body.dark-mode .platform-card.fb {
-            background: #172554;
-        }
-
-        body.dark-mode .platform-card.tiktok {
-            background: #052e24;
         }
 
         .platform-icon {
@@ -520,18 +402,16 @@
             background: #0f766e;
         }
 
-        /* ==============================
-           FEATURES
-        ============================== */
+        /* Features */
 
         .features-bar {
             padding: 3rem 8%;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
-            background: var(--bg-light);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .feature-item {
@@ -560,9 +440,7 @@
             color: var(--text-muted);
         }
 
-        /* ==============================
-           FOOTER
-        ============================== */
+        /* Footer */
 
         footer {
             background: #0f172a;
@@ -637,42 +515,9 @@
             font-size: 0.85rem;
         }
 
-        /* ==============================
-           RTL
-        ============================== */
-
-        html[dir="rtl"] .input-box-wrapper {
-            direction: ltr;
-        }
-
-        html[dir="rtl"] .hero,
-        html[dir="rtl"] .platforms-section,
-        html[dir="rtl"] .features-bar,
-        html[dir="rtl"] footer {
-            direction: rtl;
-        }
-
-        /* ==============================
-           RESPONSIVE
-        ============================== */
+        /* Responsive */
 
         @media (max-width: 900px) {
-
-            nav {
-                padding: 1rem 5%;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .nav-right {
-                gap: 6px;
-            }
-
-            .language-select {
-                max-width: 105px;
-            }
 
             .hero {
                 grid-template-columns: 1fr;
@@ -689,76 +534,9 @@
             .footer-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width: 520px) {
-
-            .logo {
-                font-size: 1.05rem;
-                gap: 6px;
-            }
-
-            .logo-icon {
-                padding: 5px 8px;
-                font-size: 0.9rem;
-            }
-
-            .control-btn {
-                width: 38px;
-                justify-content: center;
-                padding: 0;
-            }
-
-            .control-btn span {
+            .nav-links {
                 display: none;
-            }
-
-            .language-select {
-                width: 75px;
-                font-size: 0.75rem;
-                padding: 0 3px;
-            }
-
-            .hero {
-                padding: 3rem 5% 4rem;
-            }
-
-            .hero h1 {
-                font-size: 2.4rem;
-            }
-
-            .subtitle-platforms {
-                font-size: 1.15rem;
-            }
-
-            .hero-desc {
-                font-size: 0.95rem;
-            }
-
-            .input-box-wrapper {
-                padding: 6px;
-            }
-
-            .input-box-wrapper i {
-                padding: 0 8px;
-            }
-
-            .btn-download {
-                font-size: 0.55rem;
-            }
-
-            .platforms-section {
-                padding: 3.5rem 5%;
-            }
-
-            .platforms-section h2 {
-                font-size: 1.8rem;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
             }
         }
 
@@ -767,9 +545,7 @@
 
 <body>
 
-    <!-- ==============================
-         NAVBAR
-    ============================== -->
+    <!-- Navbar -->
 
     <nav>
 
@@ -777,118 +553,52 @@
 
             <span class="logo-icon">MT</span>
 
-            <span data-i18n="brand">
-                MT Download
-            </span>
+            <span>MT Download</span>
 
         </a>
 
-        <div class="nav-right">
+        <ul class="nav-links">
 
-            <ul class="nav-links">
+            <li>
+                <a href="#" class="active">Home</a>
+            </li>
 
-                <li>
-                    <a href="#" class="active" data-i18n="home">
-                        Home
-                    </a>
-                </li>
+            <li>
+                <a href="#how-it-works">How It Works</a>
+            </li>
 
-                <li>
-                    <a href="#how-it-works" data-i18n="how">
-                        How It Works
-                    </a>
-                </li>
+            <li>
+                <a href="#faq">FAQ</a>
+            </li>
 
-                <li>
-                    <a href="#faq" data-i18n="faq">
-                        FAQ
-                    </a>
-                </li>
+            <li>
+                <a href="#contact">Contact</a>
+            </li>
 
-                <li>
-                    <a href="#contact" data-i18n="contact">
-                        Contact
-                    </a>
-                </li>
-
-            </ul>
-
-            <!-- LANGUAGE -->
-
-            <select
-                id="languageSelect"
-                class="language-select"
-                aria-label="Language"
-            >
-
-                <option value="en">🇬🇧 English</option>
-                <option value="zh">🇨🇳 中文</option>
-                <option value="hi">🇮🇳 हिन्दी</option>
-                <option value="es">🇪🇸 Español</option>
-                <option value="ar">🇸🇦 العربية</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="bn">🇧🇩 বাংলা</option>
-                <option value="pt">🇵🇹 Português</option>
-                <option value="ru">🇷🇺 Русский</option>
-                <option value="ur">🇵🇰 اردو</option>
-
-            </select>
-
-            <!-- DARK MODE -->
-
-            <button
-                class="control-btn"
-                id="themeToggle"
-                type="button"
-                aria-label="Toggle dark mode"
-            >
-
-                <i class="fa-solid fa-moon"></i>
-
-                <span id="themeText">
-                    Dark
-                </span>
-
-            </button>
-
-        </div>
+        </ul>
 
     </nav>
 
 
-    <!-- ==============================
-         HERO
-    ============================== -->
+    <!-- Hero Section -->
 
     <section class="hero">
 
         <div class="hero-content">
 
-            <span class="badge" data-i18n="badge">
+            <span class="badge">
                 ⚡ Fast • Free • No Sign Up
             </span>
 
             <h1>
-                <span data-i18n="downloadWord">
-                    Download
-                </span>
-
-                <span data-i18n="videosReels">
-                    Videos & Reels
-                </span>
+                Download <span>Videos & Reels</span>
             </h1>
 
-            <div
-                class="subtitle-platforms"
-                data-i18n="platformNames"
-            >
+            <div class="subtitle-platforms">
                 Instagram • Facebook • TikTok
             </div>
 
-            <p
-                class="hero-desc"
-                data-i18n="heroDesc"
-            >
+            <p class="hero-desc">
                 Paste the video link from Instagram, Facebook or TikTok
                 and download it in high quality. It's fast, easy and free!
             </p>
@@ -903,7 +613,6 @@
                 <input
                     type="text"
                     id="videoUrl"
-                    data-i18n-placeholder="placeholder"
                     placeholder="Paste video link here..."
                 >
 
@@ -914,10 +623,7 @@
 
                     <i class="fa-solid fa-download"></i>
 
-                    <span
-                        id="downloadText"
-                        data-i18n="download"
-                    >
+                    <span id="downloadText">
                         Download
                     </span>
 
@@ -943,15 +649,24 @@
 
                 <div class="result-card">
 
+
+                    <!-- Thumbnail -->
+
                     <img
                         id="thumbImg"
                         src=""
                         alt="Thumbnail"
                     >
 
+
+                    <!-- Video Title -->
+
                     <h3 id="videoTitle">
                         Video Title
                     </h3>
+
+
+                    <!-- SAVE MP4 -->
 
                     <button
                         id="dlBtn"
@@ -962,9 +677,7 @@
 
                         <i class="fa-solid fa-file-arrow-down"></i>
 
-                        <span data-i18n="saveMp4">
-                            Save MP4 Video
-                        </span>
+                        Save MP4 Video
 
                     </button>
 
@@ -976,25 +689,33 @@
                         id="qualityOptions"
                     >
 
+                        <!-- NORMAL QUALITY -->
+
                         <a
                             id="normalBtn"
                             class="quality-btn normal-quality"
                             href="#"
-                            data-i18n="normalQuality"
                         >
+
                             Download Video in Normal Quality
+
                         </a>
+
+
+                        <!-- HD QUALITY -->
 
                         <a
                             id="hdBtn"
                             class="quality-btn hd-quality"
                             href="#"
-                            data-i18n="hdQuality"
                         >
+
                             Download Video in HD Quality
+
                         </a>
 
                     </div>
+
 
                 </div>
 
@@ -1003,7 +724,7 @@
         </div>
 
 
-        <!-- PHONE -->
+        <!-- Phone Illustration -->
 
         <div class="hero-image">
 
@@ -1018,20 +739,18 @@
     </section>
 
 
-    <!-- ==============================
-         PLATFORMS
-    ============================== -->
+    <!-- Choose Platform -->
 
     <section
         class="platforms-section"
         id="how-it-works"
     >
 
-        <h2 data-i18n="choosePlatform">
+        <h2>
             Choose Your Platform
         </h2>
 
-        <p data-i18n="chooseDesc">
+        <p>
             Select the platform and paste the video link above to get started.
         </p>
 
@@ -1039,7 +758,7 @@
         <div class="cards-grid">
 
 
-            <!-- INSTAGRAM -->
+            <!-- Instagram -->
 
             <div class="platform-card insta">
 
@@ -1053,23 +772,25 @@
                     Instagram
                 </h3>
 
-                <p data-i18n="instagramDesc">
+                <p>
                     Download Reels, Videos, IGTV and more.
                 </p>
 
                 <a
                     href="#videoUrl"
                     class="card-btn"
-                    data-i18n="getStarted"
                 >
+
                     Get Started
+
                     <i class="fa-solid fa-arrow-right"></i>
+
                 </a>
 
             </div>
 
 
-            <!-- FACEBOOK -->
+            <!-- Facebook -->
 
             <div class="platform-card fb">
 
@@ -1083,23 +804,25 @@
                     Facebook
                 </h3>
 
-                <p data-i18n="facebookDesc">
+                <p>
                     Download videos from posts, pages and groups.
                 </p>
 
                 <a
                     href="#videoUrl"
                     class="card-btn"
-                    data-i18n="getStarted"
                 >
+
                     Get Started
+
                     <i class="fa-solid fa-arrow-right"></i>
+
                 </a>
 
             </div>
 
 
-            <!-- TIKTOK -->
+            <!-- TikTok -->
 
             <div class="platform-card tiktok">
 
@@ -1113,17 +836,19 @@
                     TikTok
                 </h3>
 
-                <p data-i18n="tiktokDesc">
+                <p>
                     Download videos, reels and more.
                 </p>
 
                 <a
                     href="#videoUrl"
                     class="card-btn"
-                    data-i18n="getStarted"
                 >
+
                     Get Started
+
                     <i class="fa-solid fa-arrow-right"></i>
+
                 </a>
 
             </div>
@@ -1133,28 +858,27 @@
     </section>
 
 
-    <!-- ==============================
-         FEATURES
-    ============================== -->
+    <!-- Features Bar -->
 
     <section class="features-bar">
+
 
         <div class="feature-item">
 
             <div
                 class="feature-icon"
-                style="background:#a855f7;"
+                style="background: #a855f7;"
             >
 
                 <i class="fa-solid fa-bolt"></i>
 
             </div>
 
-            <h4 data-i18n="fastReliable">
+            <h4>
                 Fast & Reliable
             </h4>
 
-            <p data-i18n="fastDesc">
+            <p>
                 Get your videos in seconds.
             </p>
 
@@ -1165,18 +889,18 @@
 
             <div
                 class="feature-icon"
-                style="background:#10b981;"
+                style="background: #10b981;"
             >
 
                 <i class="fa-solid fa-shield-halved"></i>
 
             </div>
 
-            <h4 data-i18n="highQuality">
+            <h4>
                 High Quality
             </h4>
 
-            <p data-i18n="qualityDesc">
+            <p>
                 Download in HD whenever possible.
             </p>
 
@@ -1187,18 +911,18 @@
 
             <div
                 class="feature-icon"
-                style="background:#3b82f6;"
+                style="background: #3b82f6;"
             >
 
                 <i class="fa-solid fa-mobile-screen"></i>
 
             </div>
 
-            <h4 data-i18n="allDevices">
+            <h4>
                 Works on All Devices
             </h4>
 
-            <p data-i18n="devicesDesc">
+            <p>
                 Use it on mobile, tablet or desktop.
             </p>
 
@@ -1209,18 +933,18 @@
 
             <div
                 class="feature-icon"
-                style="background:#ec4899;"
+                style="background: #ec4899;"
             >
 
                 <i class="fa-solid fa-infinity"></i>
 
             </div>
 
-            <h4 data-i18n="free">
+            <h4>
                 100% Free
             </h4>
 
-            <p data-i18n="freeDesc">
+            <p>
                 No hidden charges. No sign up required.
             </p>
 
@@ -1229,20 +953,19 @@
     </section>
 
 
-    <!-- ==============================
-         FOOTER
-    ============================== -->
+    <!-- Footer -->
 
     <footer>
 
         <div class="footer-grid">
+
 
             <div class="footer-brand">
 
                 <a
                     href="#"
                     class="logo"
-                    style="color:white;"
+                    style="color: white;"
                 >
 
                     <span class="logo-icon">
@@ -1255,8 +978,9 @@
 
                 </a>
 
-                <p data-i18n="footerDesc">
+                <p>
                     Your all-in-one social media video downloader.
+                    <br>
                     Instagram • Facebook • TikTok
                 </p>
 
@@ -1268,32 +992,32 @@
                 id="faq"
             >
 
-                <h4 data-i18n="quickLinks">
+                <h4>
                     Quick Links
                 </h4>
 
                 <ul>
 
                     <li>
-                        <a href="#" data-i18n="home">
+                        <a href="#">
                             Home
                         </a>
                     </li>
 
                     <li>
-                        <a href="#how-it-works" data-i18n="how">
+                        <a href="#">
                             How It Works
                         </a>
                     </li>
 
                     <li>
-                        <a href="#faq" data-i18n="faq">
+                        <a href="#">
                             FAQ
                         </a>
                     </li>
 
                     <li>
-                        <a href="#contact" data-i18n="contact">
+                        <a href="#">
                             Contact
                         </a>
                     </li>
@@ -1308,7 +1032,7 @@
                 id="contact"
             >
 
-                <h4 data-i18n="followUs">
+                <h4>
                     Follow Us
                 </h4>
 
@@ -1343,7 +1067,7 @@
                 © 2026 MT Download. All rights reserved.
             </p>
 
-            <p data-i18n="madeWith">
+            <p>
                 Made with ❤️ for video lovers.
             </p>
 
@@ -1352,951 +1076,19 @@
     </footer>
 
 
-    <!-- ==============================
-         JAVASCRIPT
-    ============================== -->
+    <!-- JavaScript -->
 
     <script>
 
-        /* =================================
-           RAILWAY BACKEND
-        ================================= */
+        // Render Backend URL
 
         const BACKEND_URL =
-            "https://video-downloader-backend-production-2307.up.railway.app";
+    "https://video-downloader-backend-production-2307.up.railway.app";
 
 
-        /* =================================
-           TRANSLATIONS
-        ================================= */
-
-        const translations = {
-
-            en: {
-
-                brand: "MT Download",
-                home: "Home",
-                how: "How It Works",
-                faq: "FAQ",
-                contact: "Contact",
-
-                badge: "⚡ Fast • Free • No Sign Up",
-                downloadWord: "Download",
-                videosReels: "Videos & Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Paste the video link from Instagram, Facebook or TikTok and download it in high quality. It's fast, easy and free!",
-
-                placeholder: "Paste video link here...",
-                download: "Download",
-                searching: "Searching...",
-
-                saveMp4: "Save MP4 Video",
-
-                normalQuality:
-                    "Download Video in Normal Quality",
-
-                hdQuality:
-                    "Download Video in HD Quality",
-
-                choosePlatform:
-                    "Choose Your Platform",
-
-                chooseDesc:
-                    "Select the platform and paste the video link above to get started.",
-
-                instagramDesc:
-                    "Download Reels, Videos, IGTV and more.",
-
-                facebookDesc:
-                    "Download videos from posts, pages and groups.",
-
-                tiktokDesc:
-                    "Download videos, reels and more.",
-
-                getStarted:
-                    "Get Started",
-
-                fastReliable:
-                    "Fast & Reliable",
-
-                fastDesc:
-                    "Get your videos in seconds.",
-
-                highQuality:
-                    "High Quality",
-
-                qualityDesc:
-                    "Download in HD whenever possible.",
-
-                allDevices:
-                    "Works on All Devices",
-
-                devicesDesc:
-                    "Use it on mobile, tablet or desktop.",
-
-                free:
-                    "100% Free",
-
-                freeDesc:
-                    "No hidden charges. No sign up required.",
-
-                footerDesc:
-                    "Your all-in-one social media video downloader. Instagram • Facebook • TikTok",
-
-                quickLinks:
-                    "Quick Links",
-
-                followUs:
-                    "Follow Us",
-
-                madeWith:
-                    "Made with ❤️ for video lovers.",
-
-                dark:
-                    "Dark",
-
-                light:
-                    "Light",
-
-                emptyUrl:
-                    "Please paste a video URL!",
-
-                searchError:
-                    "Video search failed!",
-
-                serverError:
-                    "Server error! Please try again later."
-
-            },
-
-
-            zh: {
-
-                brand: "MT 下载",
-                home: "首页",
-                how: "使用方法",
-                faq: "常见问题",
-                contact: "联系我们",
-
-                badge: "⚡ 快速 • 免费 • 无需注册",
-                downloadWord: "下载",
-                videosReels: "视频和 Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "粘贴 Instagram、Facebook 或 TikTok 视频链接，即可下载高清视频。快速、简单、免费！",
-
-                placeholder: "在这里粘贴视频链接...",
-                download: "下载",
-                searching: "搜索中...",
-
-                saveMp4: "保存 MP4 视频",
-                normalQuality: "下载普通画质视频",
-                hdQuality: "下载高清 HD 视频",
-
-                choosePlatform: "选择平台",
-                chooseDesc: "选择平台并粘贴上方的视频链接即可开始。",
-
-                instagramDesc: "下载 Reels、视频、IGTV 等内容。",
-                facebookDesc: "下载帖子、主页和群组中的视频。",
-                tiktokDesc: "下载 TikTok 视频和 Reels。",
-
-                getStarted: "开始使用",
-
-                fastReliable: "快速可靠",
-                fastDesc: "几秒钟即可获得视频。",
-
-                highQuality: "高质量",
-                qualityDesc: "支持时可下载 HD 高清视频。",
-
-                allDevices: "支持所有设备",
-                devicesDesc: "手机、平板电脑和电脑均可使用。",
-
-                free: "100% 免费",
-                freeDesc: "无隐藏费用，无需注册。",
-
-                footerDesc:
-                    "一站式社交媒体视频下载工具。Instagram • Facebook • TikTok",
-
-                quickLinks: "快速链接",
-                followUs: "关注我们",
-                madeWith: "用 ❤️ 为视频爱好者打造。",
-
-                dark: "深色",
-                light: "浅色",
-
-                emptyUrl: "请输入视频链接！",
-                searchError: "视频搜索失败！",
-                serverError: "服务器错误！请稍后再试。"
-            },
-
-
-            hi: {
-
-                brand: "MT Download",
-                home: "होम",
-                how: "कैसे काम करता है",
-                faq: "FAQ",
-                contact: "संपर्क",
-
-                badge: "⚡ तेज़ • मुफ्त • बिना साइन अप",
-                downloadWord: "डाउनलोड",
-                videosReels: "वीडियो और Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Instagram, Facebook या TikTok का वीडियो लिंक डालें और उसे हाई क्वालिटी में डाउनलोड करें। तेज़, आसान और मुफ्त!",
-
-                placeholder: "वीडियो लिंक यहाँ पेस्ट करें...",
-                download: "डाउनलोड",
-                searching: "खोज रहा है...",
-
-                saveMp4: "MP4 वीडियो सेव करें",
-
-                normalQuality:
-                    "Normal Quality में वीडियो डाउनलोड करें",
-
-                hdQuality:
-                    "HD Quality में वीडियो डाउनलोड करें",
-
-                choosePlatform:
-                    "अपना प्लेटफॉर्म चुनें",
-
-                chooseDesc:
-                    "प्लेटफॉर्म चुनें और ऊपर वीडियो लिंक पेस्ट करके शुरू करें।",
-
-                instagramDesc:
-                    "Reels, Videos, IGTV और अन्य वीडियो डाउनलोड करें।",
-
-                facebookDesc:
-                    "Posts, Pages और Groups से वीडियो डाउनलोड करें।",
-
-                tiktokDesc:
-                    "TikTok वीडियो और Reels डाउनलोड करें।",
-
-                getStarted:
-                    "शुरू करें",
-
-                fastReliable:
-                    "तेज़ और भरोसेमंद",
-
-                fastDesc:
-                    "कुछ सेकंड में अपना वीडियो प्राप्त करें।",
-
-                highQuality:
-                    "हाई क्वालिटी",
-
-                qualityDesc:
-                    "जहाँ संभव हो HD में डाउनलोड करें।",
-
-                allDevices:
-                    "सभी डिवाइस पर काम करता है",
-
-                devicesDesc:
-                    "मोबाइल, टैबलेट या कंप्यूटर पर इस्तेमाल करें।",
-
-                free:
-                    "100% मुफ्त",
-
-                freeDesc:
-                    "कोई छिपा शुल्क नहीं। साइन अप की जरूरत नहीं।",
-
-                footerDesc:
-                    "आपका ऑल-इन-वन सोशल मीडिया वीडियो डाउनलोडर। Instagram • Facebook • TikTok",
-
-                quickLinks:
-                    "Quick Links",
-
-                followUs:
-                    "हमें फॉलो करें",
-
-                madeWith:
-                    "वीडियो प्रेमियों के लिए ❤️ से बनाया गया।",
-
-                dark:
-                    "डार्क",
-
-                light:
-                    "लाइट",
-
-                emptyUrl:
-                    "कृपया वीडियो URL पेस्ट करें!",
-
-                searchError:
-                    "वीडियो खोजा नहीं जा सका!",
-
-                serverError:
-                    "Server error! कृपया थोड़ी देर बाद प्रयास करें।"
-            },
-
-
-            es: {
-
-                brand: "MT Download",
-                home: "Inicio",
-                how: "Cómo funciona",
-                faq: "Preguntas",
-                contact: "Contacto",
-
-                badge: "⚡ Rápido • Gratis • Sin registro",
-                downloadWord: "Descargar",
-                videosReels: "Videos y Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Pega el enlace de Instagram, Facebook o TikTok y descarga el video en alta calidad. ¡Rápido, fácil y gratis!",
-
-                placeholder: "Pega el enlace del video aquí...",
-                download: "Descargar",
-                searching: "Buscando...",
-
-                saveMp4: "Guardar video MP4",
-                normalQuality: "Descargar en calidad normal",
-                hdQuality: "Descargar en calidad HD",
-
-                choosePlatform: "Elige tu plataforma",
-                chooseDesc: "Selecciona una plataforma y pega el enlace del video.",
-
-                instagramDesc: "Descarga Reels, Videos, IGTV y más.",
-                facebookDesc: "Descarga videos de publicaciones, páginas y grupos.",
-                tiktokDesc: "Descarga videos y Reels de TikTok.",
-
-                getStarted: "Comenzar",
-
-                fastReliable: "Rápido y confiable",
-                fastDesc: "Obtén tus videos en segundos.",
-
-                highQuality: "Alta calidad",
-                qualityDesc: "Descarga en HD cuando sea posible.",
-
-                allDevices: "Todos los dispositivos",
-                devicesDesc: "Úsalo en móvil, tablet o computadora.",
-
-                free: "100% Gratis",
-                freeDesc: "Sin cargos ocultos. Sin registro.",
-
-                footerDesc:
-                    "Tu descargador de videos de redes sociales. Instagram • Facebook • TikTok",
-
-                quickLinks: "Enlaces rápidos",
-                followUs: "Síguenos",
-                madeWith: "Hecho con ❤️ para los amantes de los videos.",
-
-                dark: "Oscuro",
-                light: "Claro",
-
-                emptyUrl: "¡Pega una URL de video!",
-                searchError: "¡No se pudo buscar el video!",
-                serverError: "¡Error del servidor! Inténtalo más tarde."
-            },
-
-
-            fr: {
-
-                brand: "MT Download",
-                home: "Accueil",
-                how: "Comment ça marche",
-                faq: "FAQ",
-                contact: "Contact",
-
-                badge: "⚡ Rapide • Gratuit • Sans inscription",
-                downloadWord: "Télécharger",
-                videosReels: "Vidéos et Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Collez le lien Instagram, Facebook ou TikTok et téléchargez la vidéo en haute qualité. Rapide, simple et gratuit !",
-
-                placeholder: "Collez le lien vidéo ici...",
-                download: "Télécharger",
-                searching: "Recherche...",
-
-                saveMp4: "Enregistrer la vidéo MP4",
-                normalQuality: "Télécharger en qualité normale",
-                hdQuality: "Télécharger en qualité HD",
-
-                choosePlatform: "Choisissez votre plateforme",
-                chooseDesc: "Sélectionnez une plateforme et collez le lien vidéo.",
-
-                instagramDesc: "Téléchargez Reels, vidéos, IGTV et plus.",
-                facebookDesc: "Téléchargez des vidéos de publications, pages et groupes.",
-                tiktokDesc: "Téléchargez des vidéos et Reels TikTok.",
-
-                getStarted: "Commencer",
-
-                fastReliable: "Rapide et fiable",
-                fastDesc: "Obtenez vos vidéos en quelques secondes.",
-
-                highQuality: "Haute qualité",
-                qualityDesc: "Téléchargez en HD lorsque cela est possible.",
-
-                allDevices: "Tous les appareils",
-                devicesDesc: "Utilisez-le sur mobile, tablette ou ordinateur.",
-
-                free: "100% Gratuit",
-                freeDesc: "Aucun frais caché. Sans inscription.",
-
-                footerDesc:
-                    "Votre téléchargeur de vidéos pour les réseaux sociaux. Instagram • Facebook • TikTok",
-
-                quickLinks: "Liens rapides",
-                followUs: "Suivez-nous",
-                madeWith: "Créé avec ❤️ pour les amateurs de vidéos.",
-
-                dark: "Sombre",
-                light: "Clair",
-
-                emptyUrl: "Veuillez coller une URL vidéo !",
-                searchError: "Impossible de rechercher la vidéo !",
-                serverError: "Erreur serveur ! Réessayez plus tard."
-            },
-
-
-            ar: {
-
-                brand: "MT Download",
-                home: "الرئيسية",
-                how: "كيف يعمل",
-                faq: "الأسئلة الشائعة",
-                contact: "اتصل بنا",
-
-                badge: "⚡ سريع • مجاني • بدون تسجيل",
-                downloadWord: "تحميل",
-                videosReels: "الفيديوهات و Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "الصق رابط الفيديو من Instagram أو Facebook أو TikTok وقم بتحميله بجودة عالية. سريع وسهل ومجاني!",
-
-                placeholder: "الصق رابط الفيديو هنا...",
-                download: "تحميل",
-                searching: "جارٍ البحث...",
-
-                saveMp4: "حفظ فيديو MP4",
-                normalQuality: "تحميل بجودة عادية",
-                hdQuality: "تحميل بجودة HD",
-
-                choosePlatform: "اختر المنصة",
-                chooseDesc: "اختر المنصة والصق رابط الفيديو أعلاه للبدء.",
-
-                instagramDesc: "تحميل Reels والفيديوهات وIGTV والمزيد.",
-                facebookDesc: "تحميل فيديوهات المنشورات والصفحات والمجموعات.",
-                tiktokDesc: "تحميل فيديوهات TikTok وReels.",
-
-                getStarted: "ابدأ الآن",
-
-                fastReliable: "سريع وموثوق",
-                fastDesc: "احصل على فيديوهاتك خلال ثوانٍ.",
-
-                highQuality: "جودة عالية",
-                qualityDesc: "تحميل HD عندما يكون ذلك متاحاً.",
-
-                allDevices: "يعمل على جميع الأجهزة",
-                devicesDesc: "استخدمه على الهاتف أو الجهاز اللوحي أو الكمبيوتر.",
-
-                free: "مجاني 100%",
-                freeDesc: "بدون رسوم مخفية وبدون تسجيل.",
-
-                footerDesc:
-                    "أداة تحميل فيديوهات التواصل الاجتماعي. Instagram • Facebook • TikTok",
-
-                quickLinks: "روابط سريعة",
-                followUs: "تابعنا",
-                madeWith: "صُنع بـ ❤️ لمحبي الفيديو.",
-
-                dark: "داكن",
-                light: "فاتح",
-
-                emptyUrl: "يرجى لصق رابط الفيديو!",
-                searchError: "تعذر البحث عن الفيديو!",
-                serverError: "خطأ في الخادم! حاول مرة أخرى لاحقاً."
-            },
-
-
-            bn: {
-
-                brand: "MT Download",
-                home: "হোম",
-                how: "কীভাবে কাজ করে",
-                faq: "FAQ",
-                contact: "যোগাযোগ",
-
-                badge: "⚡ দ্রুত • বিনামূল্যে • সাইন আপ নেই",
-                downloadWord: "ডাউনলোড",
-                videosReels: "ভিডিও ও Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Instagram, Facebook বা TikTok ভিডিও লিঙ্ক পেস্ট করে উচ্চ মানের ভিডিও ডাউনলোড করুন। দ্রুত, সহজ এবং বিনামূল্যে!",
-
-                placeholder: "ভিডিও লিঙ্ক এখানে পেস্ট করুন...",
-                download: "ডাউনলোড",
-                searching: "খোঁজা হচ্ছে...",
-
-                saveMp4: "MP4 ভিডিও সংরক্ষণ করুন",
-                normalQuality: "Normal Quality ভিডিও ডাউনলোড করুন",
-                hdQuality: "HD Quality ভিডিও ডাউনলোড করুন",
-
-                choosePlatform: "আপনার প্ল্যাটফর্ম নির্বাচন করুন",
-                chooseDesc: "প্ল্যাটফর্ম নির্বাচন করুন এবং উপরের ভিডিও লিঙ্ক পেস্ট করুন।",
-
-                instagramDesc: "Reels, Videos, IGTV এবং আরও অনেক কিছু ডাউনলোড করুন।",
-                facebookDesc: "Posts, Pages এবং Groups থেকে ভিডিও ডাউনলোড করুন।",
-                tiktokDesc: "TikTok ভিডিও ও Reels ডাউনলোড করুন।",
-
-                getStarted: "শুরু করুন",
-
-                fastReliable: "দ্রুত ও নির্ভরযোগ্য",
-                fastDesc: "কয়েক সেকেন্ডে ভিডিও পান।",
-
-                highQuality: "উচ্চ মান",
-                qualityDesc: "সম্ভব হলে HD-তে ডাউনলোড করুন।",
-
-                allDevices: "সব ডিভাইসে কাজ করে",
-                devicesDesc: "মোবাইল, ট্যাবলেট বা কম্পিউটারে ব্যবহার করুন।",
-
-                free: "১০০% বিনামূল্যে",
-                freeDesc: "কোনও গোপন চার্জ নেই। সাইন আপ দরকার নেই।",
-
-                footerDesc:
-                    "আপনার অল-ইন-ওয়ান সোশ্যাল মিডিয়া ভিডিও ডাউনলোডার। Instagram • Facebook • TikTok",
-
-                quickLinks: "দ্রুত লিঙ্ক",
-                followUs: "আমাদের অনুসরণ করুন",
-                madeWith: "ভিডিওপ্রেমীদের জন্য ❤️ দিয়ে তৈরি।",
-
-                dark: "ডার্ক",
-                light: "লাইট",
-
-                emptyUrl: "অনুগ্রহ করে ভিডিও URL পেস্ট করুন!",
-                searchError: "ভিডিও খুঁজে পাওয়া যায়নি!",
-                serverError: "সার্ভার সমস্যা! পরে আবার চেষ্টা করুন।"
-            },
-
-
-            pt: {
-
-                brand: "MT Download",
-                home: "Início",
-                how: "Como funciona",
-                faq: "FAQ",
-                contact: "Contato",
-
-                badge: "⚡ Rápido • Grátis • Sem cadastro",
-                downloadWord: "Baixar",
-                videosReels: "Vídeos e Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Cole o link do Instagram, Facebook ou TikTok e baixe o vídeo em alta qualidade. Rápido, fácil e grátis!",
-
-                placeholder: "Cole o link do vídeo aqui...",
-                download: "Baixar",
-                searching: "Pesquisando...",
-
-                saveMp4: "Salvar vídeo MP4",
-                normalQuality: "Baixar em qualidade normal",
-                hdQuality: "Baixar em qualidade HD",
-
-                choosePlatform: "Escolha sua plataforma",
-                chooseDesc: "Selecione a plataforma e cole o link do vídeo.",
-
-                instagramDesc: "Baixe Reels, vídeos, IGTV e muito mais.",
-                facebookDesc: "Baixe vídeos de posts, páginas e grupos.",
-                tiktokDesc: "Baixe vídeos e Reels do TikTok.",
-
-                getStarted: "Começar",
-
-                fastReliable: "Rápido e confiável",
-                fastDesc: "Receba seus vídeos em segundos.",
-
-                highQuality: "Alta qualidade",
-                qualityDesc: "Baixe em HD quando possível.",
-
-                allDevices: "Funciona em todos os dispositivos",
-                devicesDesc: "Use no celular, tablet ou computador.",
-
-                free: "100% Grátis",
-                freeDesc: "Sem taxas ocultas. Sem cadastro.",
-
-                footerDesc:
-                    "Seu downloader de vídeos de redes sociais. Instagram • Facebook • TikTok",
-
-                quickLinks: "Links rápidos",
-                followUs: "Siga-nos",
-                madeWith: "Feito com ❤️ para amantes de vídeos.",
-
-                dark: "Escuro",
-                light: "Claro",
-
-                emptyUrl: "Cole uma URL de vídeo!",
-                searchError: "Não foi possível encontrar o vídeo!",
-                serverError: "Erro no servidor! Tente novamente mais tarde."
-            },
-
-
-            ru: {
-
-                brand: "MT Download",
-                home: "Главная",
-                how: "Как это работает",
-                faq: "FAQ",
-                contact: "Контакты",
-
-                badge: "⚡ Быстро • Бесплатно • Без регистрации",
-                downloadWord: "Скачать",
-                videosReels: "Видео и Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Вставьте ссылку на видео из Instagram, Facebook или TikTok и скачайте его в высоком качестве. Быстро, просто и бесплатно!",
-
-                placeholder: "Вставьте ссылку на видео...",
-                download: "Скачать",
-                searching: "Поиск...",
-
-                saveMp4: "Сохранить видео MP4",
-                normalQuality: "Скачать видео в обычном качестве",
-                hdQuality: "Скачать видео в HD качестве",
-
-                choosePlatform: "Выберите платформу",
-                chooseDesc: "Выберите платформу и вставьте ссылку на видео.",
-
-                instagramDesc: "Скачивайте Reels, видео, IGTV и многое другое.",
-                facebookDesc: "Скачивайте видео из публикаций, страниц и групп.",
-                tiktokDesc: "Скачивайте видео и Reels из TikTok.",
-
-                getStarted: "Начать",
-
-                fastReliable: "Быстро и надежно",
-                fastDesc: "Получите видео за несколько секунд.",
-
-                highQuality: "Высокое качество",
-                qualityDesc: "Скачивайте HD, когда это возможно.",
-
-                allDevices: "Работает на всех устройствах",
-                devicesDesc: "Используйте на телефоне, планшете или компьютере.",
-
-                free: "100% Бесплатно",
-                freeDesc: "Без скрытых платежей и регистрации.",
-
-                footerDesc:
-                    "Ваш универсальный загрузчик видео из социальных сетей. Instagram • Facebook • TikTok",
-
-                quickLinks: "Быстрые ссылки",
-                followUs: "Подписывайтесь",
-                madeWith: "Создано с ❤️ для любителей видео.",
-
-                dark: "Темная",
-                light: "Светлая",
-
-                emptyUrl: "Пожалуйста, вставьте URL видео!",
-                searchError: "Не удалось найти видео!",
-                serverError: "Ошибка сервера! Попробуйте позже."
-            },
-
-
-            ur: {
-
-                brand: "MT Download",
-                home: "ہوم",
-                how: "یہ کیسے کام کرتا ہے",
-                faq: "اکثر پوچھے گئے سوالات",
-                contact: "رابطہ",
-
-                badge: "⚡ تیز • مفت • سائن اپ کے بغیر",
-                downloadWord: "ڈاؤن لوڈ",
-                videosReels: "ویڈیوز اور Reels",
-                platformNames: "Instagram • Facebook • TikTok",
-
-                heroDesc:
-                    "Instagram، Facebook یا TikTok کا ویڈیو لنک پیسٹ کریں اور اسے اعلیٰ معیار میں ڈاؤن لوڈ کریں۔ تیز، آسان اور مفت!",
-
-                placeholder: "ویڈیو لنک یہاں پیسٹ کریں...",
-                download: "ڈاؤن لوڈ",
-                searching: "تلاش جاری ہے...",
-
-                saveMp4: "MP4 ویڈیو محفوظ کریں",
-                normalQuality: "Normal Quality میں ویڈیو ڈاؤن لوڈ کریں",
-                hdQuality: "HD Quality میں ویڈیو ڈاؤن لوڈ کریں",
-
-                choosePlatform: "اپنا پلیٹ فارم منتخب کریں",
-                chooseDesc: "پلیٹ فارم منتخب کریں اور اوپر ویڈیو لنک پیسٹ کریں۔",
-
-                instagramDesc: "Reels، Videos، IGTV اور مزید ڈاؤن لوڈ کریں۔",
-                facebookDesc: "Posts، Pages اور Groups سے ویڈیوز ڈاؤن لوڈ کریں۔",
-                tiktokDesc: "TikTok ویڈیوز اور Reels ڈاؤن لوڈ کریں۔",
-
-                getStarted: "شروع کریں",
-
-                fastReliable: "تیز اور قابل اعتماد",
-                fastDesc: "چند سیکنڈ میں اپنی ویڈیو حاصل کریں۔",
-
-                highQuality: "اعلیٰ معیار",
-                qualityDesc: "جہاں ممکن ہو HD میں ڈاؤن لوڈ کریں۔",
-
-                allDevices: "تمام ڈیوائسز پر کام کرتا ہے",
-                devicesDesc: "موبائل، ٹیبلٹ یا کمپیوٹر پر استعمال کریں۔",
-
-                free: "100% مفت",
-                freeDesc: "کوئی پوشیدہ چارج نہیں۔ سائن اپ کی ضرورت نہیں۔",
-
-                footerDesc:
-                    "آپ کا آل اِن ون سوشل میڈیا ویڈیو ڈاؤن لوڈر۔ Instagram • Facebook • TikTok",
-
-                quickLinks: "فوری لنکس",
-                followUs: "ہمیں فالو کریں",
-                madeWith: "ویڈیو کے شوقین افراد کے لیے ❤️ سے بنایا گیا۔",
-
-                dark: "ڈارک",
-                light: "لائٹ",
-
-                emptyUrl: "براہ کرم ویڈیو URL پیسٹ کریں!",
-                searchError: "ویڈیو تلاش نہیں ہو سکی!",
-                serverError: "سرور کی خرابی! کچھ دیر بعد دوبارہ کوشش کریں۔"
-            }
-
-        };
-
-
-        /* =================================
-           LANGUAGE
-        ================================= */
-
-        let currentLanguage =
-            localStorage.getItem("mtLanguage") || "en";
-
-
-        function t(key) {
-
-            return (
-                translations[currentLanguage] &&
-                translations[currentLanguage][key]
-            ) ||
-            translations.en[key] ||
-            key;
-
-        }
-
-
-        function applyLanguage(lang) {
-
-            if (!translations[lang]) {
-                lang = "en";
-            }
-
-            currentLanguage = lang;
-
-            localStorage.setItem(
-                "mtLanguage",
-                lang
-            );
-
-
-            /* HTML direction */
-
-            if (
-                lang === "ar" ||
-                lang === "ur"
-            ) {
-
-                document.documentElement.dir =
-                    "rtl";
-
-            } else {
-
-                document.documentElement.dir =
-                    "ltr";
-
-            }
-
-
-            document.documentElement.lang =
-                lang;
-
-
-            /* Text */
-
-            document
-                .querySelectorAll("[data-i18n]")
-                .forEach(function(element) {
-
-                    const key =
-                        element.getAttribute(
-                            "data-i18n"
-                        );
-
-                    if (t(key)) {
-
-                        element.textContent =
-                            t(key);
-
-                    }
-
-                });
-
-
-            /* Placeholder */
-
-            document
-                .querySelectorAll(
-                    "[data-i18n-placeholder]"
-                )
-                .forEach(function(element) {
-
-                    const key =
-                        element.getAttribute(
-                            "data-i18n-placeholder"
-                        );
-
-                    element.placeholder =
-                        t(key);
-
-                });
-
-
-            /* Download button */
-
-            if (
-                document.getElementById(
-                    "downloadText"
-                )
-            ) {
-
-                document.getElementById(
-                    "downloadText"
-                ).textContent =
-                    t("download");
-
-            }
-
-
-            /* Theme text */
-
-            updateThemeButton();
-
-
-            /* Title */
-
-            document.title =
-                "MT Download - " +
-                t("videosReels");
-
-        }
-
-
-        document
-            .getElementById("languageSelect")
-            .addEventListener(
-                "change",
-                function() {
-
-                    applyLanguage(
-                        this.value
-                    );
-
-                }
-            );
-
-
-        document
-            .getElementById("languageSelect")
-            .value =
-            currentLanguage;
-
-
-        /* =================================
-           DARK MODE
-        ================================= */
-
-        let savedTheme =
-            localStorage.getItem("mtTheme") ||
-            "light";
-
-
-        if (savedTheme === "dark") {
-
-            document.body.classList.add(
-                "dark-mode"
-            );
-
-        }
-
-
-        function updateThemeButton() {
-
-            const icon =
-                document.querySelector(
-                    "#themeToggle i"
-                );
-
-            const text =
-                document.getElementById(
-                    "themeText"
-                );
-
-
-            if (
-                document.body.classList.contains(
-                    "dark-mode"
-                )
-            ) {
-
-                icon.className =
-                    "fa-solid fa-sun";
-
-                text.textContent =
-                    t("light");
-
-            } else {
-
-                icon.className =
-                    "fa-solid fa-moon";
-
-                text.textContent =
-                    t("dark");
-
-            }
-
-        }
-
-
-        document
-            .getElementById("themeToggle")
-            .addEventListener(
-                "click",
-                function() {
-
-                    document.body.classList.toggle(
-                        "dark-mode"
-                    );
-
-
-                    const theme =
-                        document.body.classList.contains(
-                            "dark-mode"
-                        )
-                        ? "dark"
-                        : "light";
-
-
-                    localStorage.setItem(
-                        "mtTheme",
-                        theme
-                    );
-
-
-                    updateThemeButton();
-
-                }
-            );
-
-
-        /* =================================
-           DOWNLOAD VIDEO
-        ================================= */
+        // ==============================
+        // DOWNLOAD VIDEO INFORMATION
+        // ==============================
 
         async function downloadVideo() {
 
@@ -2306,49 +1098,38 @@
                 .value
                 .trim();
 
-
             const errorMsg =
-                document.getElementById(
-                    "errorMsg"
-                );
-
+                document.getElementById("errorMsg");
 
             const resultContainer =
-                document.getElementById(
-                    "resultContainer"
-                );
-
+                document.getElementById("resultContainer");
 
             const downloadText =
-                document.getElementById(
-                    "downloadText"
-                );
+                document.getElementById("downloadText");
 
+
+            // Quality options को पहले छुपाएं
 
             document
-                .getElementById(
-                    "qualityOptions"
-                )
-                .style.display =
-                "none";
+                .getElementById("qualityOptions")
+                .style.display = "none";
 
 
-            /* Empty URL */
+            // URL खाली है
 
             if (!urlInput) {
 
                 errorMsg.innerText =
-                    t("emptyUrl");
+                    "Kripya video ka URL paste karein!";
 
                 errorMsg.style.display =
                     "block";
 
                 return;
-
             }
 
 
-            /* Reset */
+            // Reset
 
             errorMsg.style.display =
                 "none";
@@ -2357,12 +1138,12 @@
                 "none";
 
             downloadText.innerText =
-                t("searching");
+                "Searching...";
 
 
             try {
 
-                /* Backend request */
+                // Backend को request
 
                 const response =
                     await fetch(
@@ -2370,60 +1151,60 @@
                     );
 
 
+                // JSON response
+
                 const data =
                     await response.json();
 
 
-                /* Success */
+                // Success
 
-                if (
-                    data.status ===
-                    "success"
-                ) {
+                if (data.status === "success") {
+
+
+                    // Thumbnail
 
                     document
-                        .getElementById(
-                            "thumbImg"
-                        )
+                        .getElementById("thumbImg")
                         .src =
                         data.thumbnail ||
                         "https://via.placeholder.com/400x200";
 
 
+                    // Title
+
                     document
-                        .getElementById(
-                            "videoTitle"
-                        )
+                        .getElementById("videoTitle")
                         .innerText =
                         data.title ||
                         "Video";
 
 
-                    /* Railway fetch-video */
+                    // Backend download URL
 
                     const proxyDownloadUrl =
                         `${BACKEND_URL}/fetch-video?url=${encodeURIComponent(data.download_url)}`;
 
 
-                    /* Normal */
+                    // Normal Quality
 
                     document
-                        .getElementById(
-                            "normalBtn"
-                        )
+                        .getElementById("normalBtn")
                         .href =
                         proxyDownloadUrl;
 
 
-                    /* HD */
+                    // HD Quality
+                    // फिलहाल backend एक ही URL दे रहा है,
+                    // इसलिए HD भी इसी URL से जुड़ा है।
 
                     document
-                        .getElementById(
-                            "hdBtn"
-                        )
+                        .getElementById("hdBtn")
                         .href =
                         proxyDownloadUrl;
 
+
+                    // Result दिखाएं
 
                     resultContainer.style.display =
                         "block";
@@ -2433,7 +1214,7 @@
 
                     errorMsg.innerText =
                         data.message ||
-                        t("searchError");
+                        "Video search nahi ho saka!";
 
                     errorMsg.style.display =
                         "block";
@@ -2446,7 +1227,7 @@
                 console.error(err);
 
                 errorMsg.innerText =
-                    t("serverError");
+                    "Server error! Kripya thodi der baad prayas karein.";
 
                 errorMsg.style.display =
                     "block";
@@ -2454,16 +1235,16 @@
             } finally {
 
                 downloadText.innerText =
-                    t("download");
+                    "Download";
 
             }
 
         }
 
 
-        /* =================================
-           QUALITY OPTIONS
-        ================================= */
+        // ==============================
+        // SHOW / HIDE QUALITY OPTIONS
+        // ==============================
 
         function showQualityOptions() {
 
@@ -2478,10 +1259,14 @@
                 "flex"
             ) {
 
+                // Hide
+
                 qualityOptions.style.display =
                     "none";
 
             } else {
+
+                // Show
 
                 qualityOptions.style.display =
                     "flex";
@@ -2490,22 +1275,9 @@
 
         }
 
-
-        /* =================================
-           INITIALIZE
-        ================================= */
-
-        applyLanguage(
-            currentLanguage
-        );
-
     </script>
+<!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"fa92947327c4447eacbb8559749ed757"}'></script>
-
-
-    <!-- ==============================
-         CLOUDFLARE WEB ANALYTICS
-    ============================== -->
-
+<!-- End Cloudflare Web Analytics -->
 </body>
 </html>
