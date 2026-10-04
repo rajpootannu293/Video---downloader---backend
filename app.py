@@ -13,10 +13,10 @@ app = Flask(__name__)
 CORS(app)
 
 # ----------------- Proxy Settings -----------------
-PROXY_USER = "zivkhhbn"
-PROXY_PASS = "46tirmm24r1p"
-PROXY_HOST = "31.59.20.176"
-PROXY_PORT = "6754"
+PROXY_USER = "zivhkhbm-rotate"
+PROXY_PASS = "46c1nmnz4r10"
+PROXY_HOST = "p.webshare.io"
+PROXY_PORT = "80"
 
 # Proxy URL String
 PROXY_URL = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}" if PROXY_HOST else None
