@@ -3,4 +3,3 @@ flask-cors
 yt-dlp
 gunicorn
 requests
-fake-useragent
