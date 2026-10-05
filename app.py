@@ -16,21 +16,33 @@ def download():
     if not video_url:
         return jsonify({'error': 'URL is required'}), 400
 
-    clean_url = video_url.strip()
-
+    clean_url = video_url.strip() 
+    
     # yt-dlp Configuration optimized for Instagram, YouTube, Facebook & TikTok
     ydl_opts = {
-        'format': 'best',
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
+        'outtmpl': '%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegVideoConvertor',
+            'preferedformat': 'mp4',
+        }],
+        'extractor_args': {
+            'instagram': {
+                'web_query': True
+            }
+        },
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Language': 'en-US,en;q=0.5',
         }
     }
+         
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
