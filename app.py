@@ -24,7 +24,6 @@ def download():
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
-        'cookiefile': 'cookies.txt',  # Upload ki gayi cookies file yahan connect hogi
         'extractor_args': {
             'instagram': {
                 'web_query': True
