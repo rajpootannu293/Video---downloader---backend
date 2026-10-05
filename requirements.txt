@@ -1,5 +1,5 @@
 Flask
 flask-cors
-yt-dlp--nightly-build
+yt-dlp
 gunicorn
 requests
