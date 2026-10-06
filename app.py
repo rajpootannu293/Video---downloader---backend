@@ -10,8 +10,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Webshare Rotating Proxy Settings (यदि आवश्यक हो)
-PROXY_USER = "zichmhbo-rotate"
-PROXY_PASS = "4bc1hns6mrio"
+PROXY_USER = "zivhkhbm-rotate"
+PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
