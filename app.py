@@ -1,16 +1,16 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 import yt_dlp
 
 app = Flask(__name__)
-# सभी डोमेन और रूट से CORS सपोर्ट इनेबल करने के लिए
+# सभी डोमेन और रूट से CORS सपोर्ट चालू करने के लिए
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # ----------- Webshare Rotating Proxy Settings -----------
 # Webshare Dashboard details
 PROXY_USER = "zivhkhbm-rotate"
-PROXY_PASS = "46c1nmnz4r1o"
+PROXY_PASS = "46tlmmnzdr1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
@@ -25,8 +25,8 @@ def home():
 
 @app.route('/download', methods=['GET', 'POST'])
 def download():
-    # Supports both GET query (?url=) and POST JSON body
-    if request.method == "POST":
+    # Support both GET query (?url=) and POST JSON body
+    if request.method == 'POST':
         data = request.get_json(silent=True) or {}
         video_url = data.get('url')
     else:
@@ -49,13 +49,13 @@ def download():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
-            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Mode': 'navigate'
         }
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # download=False से केवल वीडियो का मेटाडेटा निकाला जाता है, वीडियो डाउनलोड नहीं होती
+            # download=False में केवल वीडियो का मेटाडेटा निकाला जाता है, वीडियो डाउनलोड नहीं होती
             info = ydl.extract_info(clean_url, download=False)
 
         if not info:
@@ -85,6 +85,23 @@ def download():
     except Exception as e:
         print(f"yt-dlp error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+# =========================================================
+# ZERO BANDWIDTH DIRECT DOWNLOAD ROUTE (CORS & BILL FIX)
+# =========================================================
+@app.route('/download-direct', methods=['GET'])
+def download_direct():
+    video_url = request.args.get('url')
+    file_name = request.args.get('name', 'video.mp4')
+
+    if not video_url:
+        return jsonify({"status": "error", "message": "URL is required"}), 400
+
+    # Attachment हेडर के साथ सीधे वीडियो URL पर रीडायरेक्ट करेगा
+    response = redirect(video_url)
+    response.headers['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    return response
 
 
 if __name__ == '__main__':
