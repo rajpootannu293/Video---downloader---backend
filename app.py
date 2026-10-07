@@ -3,27 +3,39 @@ import requests
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
+from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
 
 app = Flask(__name__)
-
-# à¤¸à¤­à¥€ Origins à¤¸à¥‡ CORS à¤•à¥€ à¤…à¤¨à¥à¤®à¤¤à¤¿ à¤¦à¥‡à¤‚ à¤¤à¤¾à¤•à¤¿ à¤«à¥à¤°à¤‚à¤Ÿà¤à¤‚à¤¡ à¤¸à¥‡ à¤°à¤¿à¤•à¥à¤µà¥‡à¤¸à¥à¤Ÿ à¤† à¤¸à¤•à¥‡
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Webshare Rotating Proxy Settings (à¤¯à¤¦à¤¿ à¤†à¤µà¤¶à¥à¤¯à¤• à¤¹à¥‹)
-PROXY_USER = "zichmhbo-rotate"
-PROXY_PASS = "4bc1hns6mrio"
+# ==========================================
+# Webshare Rotating Proxy Settings
+# ==========================================
+PROXY_USER = "zivhkhbm-rotate"
+PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-PROXY_URL = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}/"
+# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
+ENCODED_PASS = quote(PROXY_PASS)
+
+# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
+PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
+
+# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
+request_proxies = {
+    "http": PROXY_URL,
+    "https": PROXY_URL
+}
+# ==========================================
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({'status': 'Backend is active and running!'})
+    return jsonify({'status': 'success', 'message': 'Backend is active and running!'})
+
 
 @app.route('/download', methods=['GET', 'POST'])
 def download():
-    # GET query à¤”à¤° POST JSON à¤¦à¥‹à¤¨à¥‹à¤‚ à¤¡à¥‡à¤Ÿà¤¾ à¤•à¥‹ à¤¹à¥ˆà¤‚à¤¡à¤² à¤•à¤°à¥‡à¤‚
     if request.method == 'POST':
         data = request.get_json(silent=True) or {}
         video_url = data.get('url')
@@ -42,7 +54,7 @@ def download():
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
-        'proxy': PROXY_URL, # Webshare Rotating Proxy
+        'proxy': PROXY_URL, # सही प्रॉक्सी यहाँ पास हो गई
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -53,7 +65,6 @@ def download():
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # à¤•à¥‡à¤µà¤² à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ (Metadata/CDN URLs) Extract à¤•à¤°à¥‡à¤‚, à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤¨ à¤•à¤°à¥‡à¤‚
             info = ydl.extract_info(clean_url, download=False)
 
         if not info:
@@ -63,7 +74,6 @@ def download():
         hd_url = None
         sd_url = None
 
-        # à¤…à¤—à¤° Playlist à¤¯à¤¾ à¤®à¤²à¥à¤Ÿà¥€à¤ªà¤² à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤•à¤¾ à¤¸à¥‡à¤Ÿ à¤¹à¥ˆ
         if 'entries' in info and len(info['entries']) > 0:
             first_entry = info['entries'][0]
             download_url = first_entry.get('url')
@@ -74,7 +84,6 @@ def download():
             title = info.get('title', 'Downloaded_Video')
             thumbnail = info.get('thumbnail', '')
 
-        # à¤…à¤²à¤—-à¤…à¤²à¤— à¤•à¥à¤µà¤¾à¤²à¤¿à¤Ÿà¥€ (SD / HD) à¤šà¥‡à¤• à¤•à¤°à¤¨à¤¾
         formats = info.get('formats', [])
         for fmt in formats:
             if fmt.get('vcodec') != 'none' and fmt.get('url'):
@@ -103,33 +112,36 @@ def download():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-# ==========================================
-# ðŸ‘‡ à¤¨à¤¯à¤¾ à¤œà¥‹à¥œà¤¾ à¤—à¤¯à¤¾ à¤°à¥‚à¤Ÿ (New Download Proxy Route)
-# ==========================================
+# ============================================================
+# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
+# ============================================================
 @app.route('/download-video')
 def download_video_proxy():
-    # à¤«à¥à¤°à¤‚à¤Ÿ-à¤à¤‚à¤¡ à¤¸à¥‡ à¤†à¤¨à¥‡ à¤µà¤¾à¤²à¥‡ à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤¯à¥‚à¤†à¤°à¤à¤² à¤•à¥‹ à¤ªà¤•à¥œà¤¨à¤¾
     video_url = request.args.get('url')
     if not video_url:
         return "URL is missing", 400
 
     try:
-        # à¤¬à¤¿à¤¨à¤¾ à¤¸à¤°à¥à¤µà¤° à¤ªà¤° à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤•à¤¿à¤ à¤¸à¥€à¤§à¥‡ à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤ªà¥à¤°à¥‹à¤µà¤¾à¤‡à¤¡à¤° à¤¸à¥‡ à¤¡à¥‡à¤Ÿà¤¾ à¤¸à¥à¤Ÿà¥à¤°à¥€à¤® à¤•à¤°à¤¨à¤¾
-        req = requests.get(video_url, stream=True, timeout=15)
-        
-        # à¤•à¥à¤°à¥‹à¤® à¤•à¥‹ à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤µà¤¿à¤‚à¤¡à¥‹ à¤–à¥‹à¤²à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤®à¤œà¤¬à¥‚à¤° à¤•à¤°à¤¨à¥‡ à¤µà¤¾à¤²à¥‡ à¤¹à¥‡à¤¡à¤°à¥à¤¸
         headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Connection': 'keep-alive'
+        }
+        # यहाँ request_proxies पास किया है ताकि यह रूट भी ब्लॉक न हो
+        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
+        
+        if req.status_code != 200:
+            return f"Error from source server: {req.status_code}", 400
+
+        response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
             'Content-Type': 'video/mp4'
         }
         
-        # à¤°à¥‡à¤²à¤µà¥‡ à¤¸à¤°à¥à¤µà¤° à¤ªà¤° à¤«à¤¾à¤‡à¤² à¤¸à¥‡à¤µ à¤¨à¤¹à¥€à¤‚ à¤¹à¥‹à¤—à¥€, à¤¡à¥‡à¤Ÿà¤¾ à¤¸à¥€à¤§à¥‡ à¤¯à¥‚à¤œà¤¼à¤° à¤•à¥‡ à¤ªà¤¾à¤¸ à¤šà¤²à¤¾ à¤œà¤¾à¤à¤—à¤¾
-        return Response(req.iter_content(chunk_size=1024*1024), headers=headers)
+        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
 
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=port)
