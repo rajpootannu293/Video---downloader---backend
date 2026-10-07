@@ -1,5 +1,6 @@
 import os
 import requests
+from urllib.parse import unquote
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
@@ -9,13 +10,19 @@ app = Flask(__name__)
 # सभी Origins से CORS की अनुमति दें ताकि फ्रंटएंड से रिक्वेस्ट आ सके
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Webshare Rotating Proxy Settings (यदि आवश्यक हो)
-PROXY_USER = "zichmhbo-rotate"
-PROXY_PASS = "4bc1hns6mrio"
+# Webshare Rotating Proxy Settings
+PROXY_USER = "zivhkhbm-rotate"
+PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
 PROXY_URL = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}/"
+
+# Requests लाइब्रेरी के लिए प्रॉक्सी कन्फिगरेशन
+PROXIES = {
+    "http": f"http://{zivhkhbm-rotate}:{46c1nmnz4r1o}@{p.webshare.io}:{80}",
+    "https": f"http://{zivhkhbm-rotate}:{46c1nmnz4r1o}@{p.webshare.io}:{80}"
+}
 
 @app.route('/', methods=['GET'])
 def home():
@@ -104,30 +111,41 @@ def download():
 
 
 # ==========================================
-# 👇 नया जोड़ा गया रूट (New Download Proxy Route)
+# 👇 नया प्रॉक्सी वीडियो डाउनलोड रूट (Updated Proxy Route)
 # ==========================================
 @app.route('/download-video')
 def download_video_proxy():
-    # फ्रंट-एंड से आने वाले वीडियो यूआरएल को पकड़ना
-    video_url = request.args.get('url')
-    if not video_url:
-        return "URL is missing", 400
+    # 'request.args.get' के बजाय पूरा यूआरएल स्ट्रिंग डायरेक्ट पकड़ना (ताकि '&' न टूटे)
+    full_query = request.query_string.decode('utf-8')
+    if 'url=' not in full_query:
+        return "ERROR: URL parameter is missing!", 400
+        
+    # 'url=' के बाद का पूरा हिस्सा सुरक्षित निकालना
+    video_url = full_query.split('url=')[1]
+    video_url = unquote(video_url)
 
     try:
-        # बिना सर्वर पर डाउनलोड किए सीधे वीडियो प्रोवाइडर से डेटा स्ट्रीम करना
-        req = requests.get(video_url, stream=True, timeout=15)
-        
-        # क्रोम को डाउनलोड विंडो खोलने के लिए मजबूर करने वाले हेडर्स
         headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        
+        req = requests.get(video_url, stream=True, headers=headers, proxies=PROXIES, timeout=20)
+        
+        # ⚠️ सोशल मीडिया ब्लॉक चेक
+        if req.status_code != 200:
+            return f"TECHNICAL ERROR: Social Media blocked the request with Status Code: {req.status_code}. Reason: {req.reason}", 400
+        
+        response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
             'Content-Type': 'video/mp4'
         }
         
-        # रेलवे सर्वर पर फाइल सेव नहीं होगी, डेटा सीधे यूज़र के पास चला जाएगा
-        return Response(req.iter_content(chunk_size=1024*1024), headers=headers)
+        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
         
+    except requests.exceptions.ProxyError as pe:
+        return f"TECHNICAL ERROR: Your Proxy credentials or connection failed! Details: {str(pe)}", 502
     except Exception as e:
-        return f"Error downloading video: {str(e)}", 500
+        return f"TECHNICAL ERROR: Backend failed! Details: {str(e)}", 500
 
 
 if __name__ == '__main__':
