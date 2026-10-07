@@ -1,28 +1,21 @@
 import os
 import requests
-from urllib.parse import unquote
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
 
 app = Flask(__name__)
 
-# सभी Origins से CORS की अनुमति दें ताकि फ्रंटएंड से रिक्वेस्ट आ सके
+# à¤¸à¤­à¥€ Origins à¤¸à¥‡ CORS à¤•à¥€ à¤…à¤¨à¥à¤®à¤¤à¤¿ à¤¦à¥‡à¤‚ à¤¤à¤¾à¤•à¤¿ à¤«à¥à¤°à¤‚à¤Ÿà¤à¤‚à¤¡ à¤¸à¥‡ à¤°à¤¿à¤•à¥à¤µà¥‡à¤¸à¥à¤Ÿ à¤† à¤¸à¤•à¥‡
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Webshare Rotating Proxy Settings
-PROXY_USER = "zivhkhbm-rotate"
-PROXY_PASS = "46c1nmnz4r1o"
+# Webshare Rotating Proxy Settings (à¤¯à¤¦à¤¿ à¤†à¤µà¤¶à¥à¤¯à¤• à¤¹à¥‹)
+PROXY_USER = "zichmhbo-rotate"
+PROXY_PASS = "4bc1hns6mrio"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
 PROXY_URL = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}/"
-
-# Requests लाइब्रेरी के लिए प्रॉक्सी कन्फिगरेशन
-PROXIES = {
-    "http": f"http://{zivhkhbm-rotate}:{46c1nmnz4r1o}@{p.webshare.io}:{80}",
-    "https": f"http://{zivhkhbm-rotate}:{46c1nmnz4r1o}@{p.webshare.io}:{80}"
-}
 
 @app.route('/', methods=['GET'])
 def home():
@@ -30,7 +23,7 @@ def home():
 
 @app.route('/download', methods=['GET', 'POST'])
 def download():
-    # GET query और POST JSON दोनों डेटा को हैंडल करें
+    # GET query à¤”à¤° POST JSON à¤¦à¥‹à¤¨à¥‹à¤‚ à¤¡à¥‡à¤Ÿà¤¾ à¤•à¥‹ à¤¹à¥ˆà¤‚à¤¡à¤² à¤•à¤°à¥‡à¤‚
     if request.method == 'POST':
         data = request.get_json(silent=True) or {}
         video_url = data.get('url')
@@ -60,7 +53,7 @@ def download():
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # केवल जानकारी (Metadata/CDN URLs) Extract करें, वीडियो डाउनलोड न करें
+            # à¤•à¥‡à¤µà¤² à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ (Metadata/CDN URLs) Extract à¤•à¤°à¥‡à¤‚, à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤¨ à¤•à¤°à¥‡à¤‚
             info = ydl.extract_info(clean_url, download=False)
 
         if not info:
@@ -70,7 +63,7 @@ def download():
         hd_url = None
         sd_url = None
 
-        # अगर Playlist या मल्टीपल वीडियो का सेट है
+        # à¤…à¤—à¤° Playlist à¤¯à¤¾ à¤®à¤²à¥à¤Ÿà¥€à¤ªà¤² à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤•à¤¾ à¤¸à¥‡à¤Ÿ à¤¹à¥ˆ
         if 'entries' in info and len(info['entries']) > 0:
             first_entry = info['entries'][0]
             download_url = first_entry.get('url')
@@ -81,7 +74,7 @@ def download():
             title = info.get('title', 'Downloaded_Video')
             thumbnail = info.get('thumbnail', '')
 
-        # अलग-अलग क्वालिटी (SD / HD) चेक करना
+        # à¤…à¤²à¤—-à¤…à¤²à¤— à¤•à¥à¤µà¤¾à¤²à¤¿à¤Ÿà¥€ (SD / HD) à¤šà¥‡à¤• à¤•à¤°à¤¨à¤¾
         formats = info.get('formats', [])
         for fmt in formats:
             if fmt.get('vcodec') != 'none' and fmt.get('url'):
@@ -111,41 +104,30 @@ def download():
 
 
 # ==========================================
-# 👇 नया प्रॉक्सी वीडियो डाउनलोड रूट (Updated Proxy Route)
+# ðŸ‘‡ à¤¨à¤¯à¤¾ à¤œà¥‹à¥œà¤¾ à¤—à¤¯à¤¾ à¤°à¥‚à¤Ÿ (New Download Proxy Route)
 # ==========================================
 @app.route('/download-video')
 def download_video_proxy():
-    # 'request.args.get' के बजाय पूरा यूआरएल स्ट्रिंग डायरेक्ट पकड़ना (ताकि '&' न टूटे)
-    full_query = request.query_string.decode('utf-8')
-    if 'url=' not in full_query:
-        return "ERROR: URL parameter is missing!", 400
-        
-    # 'url=' के बाद का पूरा हिस्सा सुरक्षित निकालना
-    video_url = full_query.split('url=')[1]
-    video_url = unquote(video_url)
+    # à¤«à¥à¤°à¤‚à¤Ÿ-à¤à¤‚à¤¡ à¤¸à¥‡ à¤†à¤¨à¥‡ à¤µà¤¾à¤²à¥‡ à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤¯à¥‚à¤†à¤°à¤à¤² à¤•à¥‹ à¤ªà¤•à¥œà¤¨à¤¾
+    video_url = request.args.get('url')
+    if not video_url:
+        return "URL is missing", 400
 
     try:
+        # à¤¬à¤¿à¤¨à¤¾ à¤¸à¤°à¥à¤µà¤° à¤ªà¤° à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤•à¤¿à¤ à¤¸à¥€à¤§à¥‡ à¤µà¥€à¤¡à¤¿à¤¯à¥‹ à¤ªà¥à¤°à¥‹à¤µà¤¾à¤‡à¤¡à¤° à¤¸à¥‡ à¤¡à¥‡à¤Ÿà¤¾ à¤¸à¥à¤Ÿà¥à¤°à¥€à¤® à¤•à¤°à¤¨à¤¾
+        req = requests.get(video_url, stream=True, timeout=15)
+        
+        # à¤•à¥à¤°à¥‹à¤® à¤•à¥‹ à¤¡à¤¾à¤‰à¤¨à¤²à¥‹à¤¡ à¤µà¤¿à¤‚à¤¡à¥‹ à¤–à¥‹à¤²à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤®à¤œà¤¬à¥‚à¤° à¤•à¤°à¤¨à¥‡ à¤µà¤¾à¤²à¥‡ à¤¹à¥‡à¤¡à¤°à¥à¤¸
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
-        
-        req = requests.get(video_url, stream=True, headers=headers, proxies=PROXIES, timeout=20)
-        
-        # ⚠️ सोशल मीडिया ब्लॉक चेक
-        if req.status_code != 200:
-            return f"TECHNICAL ERROR: Social Media blocked the request with Status Code: {req.status_code}. Reason: {req.reason}", 400
-        
-        response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
             'Content-Type': 'video/mp4'
         }
         
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        # à¤°à¥‡à¤²à¤µà¥‡ à¤¸à¤°à¥à¤µà¤° à¤ªà¤° à¤«à¤¾à¤‡à¤² à¤¸à¥‡à¤µ à¤¨à¤¹à¥€à¤‚ à¤¹à¥‹à¤—à¥€, à¤¡à¥‡à¤Ÿà¤¾ à¤¸à¥€à¤§à¥‡ à¤¯à¥‚à¤œà¤¼à¤° à¤•à¥‡ à¤ªà¤¾à¤¸ à¤šà¤²à¤¾ à¤œà¤¾à¤à¤—à¤¾
+        return Response(req.iter_content(chunk_size=1024*1024), headers=headers)
         
-    except requests.exceptions.ProxyError as pe:
-        return f"TECHNICAL ERROR: Your Proxy credentials or connection failed! Details: {str(pe)}", 502
     except Exception as e:
-        return f"TECHNICAL ERROR: Backend failed! Details: {str(e)}", 500
+        return f"Error downloading video: {str(e)}", 500
 
 
 if __name__ == '__main__':
