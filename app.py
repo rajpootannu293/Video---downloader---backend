@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # ==========================================
-# Webshare Rotating Proxy Settings
+# Webshare Rotating Proxy Settings (From Your File)
 # ==========================================
 PROXY_USER = "zivhkhbm-rotate"
 PROXY_PASS = "46c1nmnz4r1o"
@@ -47,18 +47,17 @@ def download():
 
     clean_url = video_url.strip()
 
-    # yt-dlp Configuration
+    # 🟢 बिल बचाने और ऑडियो ट्रैक सुरक्षित करने वाला परफेक्ट लाइटवेट कॉन्फ़िगरेशन
     ydl_opts = {
-        'format': 'best',
+        'format': 'best[vcodec!=none][acodec!=none]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
         'proxy': PROXY_URL,
-        # 🟢 यह नया ऑप्शन जोड़ें: यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
+        # यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
         'extractor_args': {'instagram': {'check_embed': True}}, 
         'http_headers': {
-            # हर बार अलग ब्राउज़र दिखाने के लिए जेनेरिक हेडर
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -74,8 +73,6 @@ def download():
             return jsonify({'status': 'error', 'message': 'Video info fetch failed!'}), 400
 
         download_url = None
-        hd_url = None
-        sd_url = None
 
         if 'entries' in info and len(info['entries']) > 0:
             first_entry = info['entries'][0]
@@ -87,16 +84,13 @@ def download():
             title = info.get('title', 'Downloaded_Video')
             thumbnail = info.get('thumbnail', '')
 
-        formats = info.get('formats', [])
-        for fmt in formats:
-            if fmt.get('vcodec') != 'none' and fmt.get('url'):
-                if fmt.get('height') and fmt.get('height') >= 720:
-                    hd_url = fmt.get('url')
-                else:
-                    sd_url = fmt.get('url')
-
-        if not download_url and formats:
-            download_url = formats[-1].get('url')
+        # अगर डायरेक्ट लिंक न मिले तो फ़ॉर्मेट लिस्ट से बेस्ट ऑडियो+वीडियो उठाना
+        if not download_url:
+            formats = info.get('formats', [])
+            for fmt in reversed(formats):
+                if fmt.get('vcodec') != 'none' and fmt.get('acodec') != 'none' and fmt.get('url'):
+                    download_url = fmt.get('url')
+                    break
 
         if download_url:
             return jsonify({
@@ -104,8 +98,8 @@ def download():
                 'title': title,
                 'thumbnail': thumbnail,
                 'download_url': download_url,
-                'sd_url': sd_url or download_url,
-                'hd_url': hd_url or download_url
+                'sd_url': download_url,
+                'hd_url': download_url
             })
         else:
             return jsonify({'status': 'error', 'message': 'Direct download link not found!'}), 400
@@ -116,7 +110,7 @@ def download():
 
 
 # ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
+# NEW DOWNLOAD PROXY ROUTE (साइज़ फिक्स करने और क्रोम पर प्ले रोकने के लिए)
 # ============================================================
 @app.route('/download-video')
 def download_video_proxy():
@@ -129,18 +123,30 @@ def download_video_proxy():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Connection': 'keep-alive'
         }
-        # यहाँ request_proxies पास किया है ताकि यह रूट भी ब्लॉक न हो
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
+        # टाइमआउट को बढ़ाकर 60 सेकंड किया ताकि स्लो नेटवर्क पर एरर न आए
+        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
+        # 🟢 यह लाइन वीडियो का कुल साइज निकालेगी (जिससे '?' एरर ठीक होगा)
+        total_size = req.headers.get('content-length')
+
         response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
-            'Content-Type': 'video/mp4'
+            'Content-Type': 'video/mp4',
+            'X-Content-Type-Options': 'nosniff'
         }
         
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        # 🟢 क्रोम ब्राउज़र को कुल साइज बताना ताकि '?' हट जाए
+        if total_size:
+            response_headers['Content-Length'] = total_size
+
+        return Response(
+            req.iter_content(chunk_size=64 * 1024), 
+            headers=response_headers,
+            direct_passthrough=True
+        )
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
