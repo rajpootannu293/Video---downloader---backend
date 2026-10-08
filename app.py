@@ -47,8 +47,10 @@ def download():
 
     clean_url = video_url.strip()
 
-        # 🟢 केवल इस हिस्से को लाइन 50 से 67 की जगह पेस्ट करें
+         # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
     ydl_opts = {
+        # स्मार्ट फ़िल्टर: पहले ऐसी MP4 वीडियो ढूँढेगा जिसमें ऑडियो-वीडियो साथ हो, 
+        # न मिलने पर बिना बिल बढ़ाए डिफ़ॉल्ट बेस्ट कंबाइंड फ़ाइल उठा लेगा।
         'format': 'best[vcodec!=none][acodec!=none]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
         'quiet': True,
         'no_warnings': True,
@@ -57,7 +59,7 @@ def download():
         'proxy': PROXY_URL,
         'extractor_args': {
             'instagram': {'check_embed': True},
-            'facebook': {'force_dash': False}
+            'facebook': {'force_dash': False} # फेसबुक को कंबाइंड (ऑडियो वाली) वीडियो देने पर मजबूर करेगा
         },
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -66,7 +68,7 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
-
+ 
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -139,25 +141,26 @@ def download_video_proxy():
         unique_id = int(time.time())
         dynamic_filename = f"video_{unique_id}.mp4"
 
-                 # 🟢 केवल इस हिस्से को लाइन 144 से 157 की जगह पेस्ट करें
-        response_headers = {
-            'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
-            'Content-Type': 'video/mp4',
-            'X-Content-Type-Options': 'nosniff',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }
-        
-        if total_size:
-            response_headers['Content-Length'] = total_size
+      # 🟢 हर बार फाइल का नाम यूनिक (बिल्कुल अलग) बनाने के लिए टाइमस्टैम्प
+import time
+unique_id = int(time.time())
+dynamic_filename = f"video_{unique_id}.mp4"
 
-        return Response(
-            # chunk_size को 256KB किया गया है ताकि 100MB+ फाइलें बिना अटके डाउनलोड हों
-            req.iter_content(chunk_size=256 * 1024), 
-            headers=response_headers,
-            direct_passthrough=True
-        )
+response_headers = {
+    'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
+    'Content-Type': 'video/mp4',
+    'X-Content-Type-Options': 'nosniff'
+}
+
+if total_size:
+    response_headers['Content-Length'] = total_size
+
+return Response(
+    req.iter_content(chunk_size=1024 * 1024),
+    headers=response_headers,
+    direct_passthrough=True
+)
+           
 
         
     except Exception as e:
