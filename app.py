@@ -3,30 +3,24 @@ import requests
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
-from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
+from urllib.parse import quote
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # ==========================================
-# Webshare Rotating Proxy Settings (From Your File)
+# Webshare Rotating Proxy Settings
 # ==========================================
 PROXY_USER = "zivhkhbm-rotate"
 PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
+# पासवर्ड सुरक्षित एनकोडिंग
 ENCODED_PASS = quote(PROXY_PASS)
-
-# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
-# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
-request_proxies = {
-    "http": PROXY_URL,
-    "https": PROXY_URL
-}
+# प्रॉक्सी केवल लिंक फेच करने (yt-dlp) के लिए इस्तेमाल होगी
 # ==========================================
 
 @app.route('/', methods=['GET'])
@@ -47,19 +41,17 @@ def download():
 
     clean_url = video_url.strip()
 
-         # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
+    # फेसबुक-इंस्टाग्राम एंटी-ब्लॉक फ़िल्टर (केवल लिंक निकालने के लिए)
     ydl_opts = {
-        # स्मार्ट फ़िल्टर: पहले ऐसी MP4 वीडियो ढूँढेगा जिसमें ऑडियो-वीडियो साथ हो, 
-        # न मिलने पर बिना बिल बढ़ाए डिफ़ॉल्ट बेस्ट कंबाइंड फ़ाइल उठा लेगा।
         'format': 'best[vcodec!=none][acodec!=none]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
-        'proxy': PROXY_URL,
+        'proxy': PROXY_URL, # प्रॉक्सी यहाँ काम करेगी (खर्च: सिर्फ 2 KB)
         'extractor_args': {
             'instagram': {'check_embed': True},
-            'facebook': {'force_dash': False} # फेसबुक को कंबाइंड (ऑडियो वाली) वीडियो देने पर मजबूर करेगा
+            'facebook': {'force_dash': False}
         },
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -68,7 +60,6 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
- 
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -80,7 +71,7 @@ def download():
         download_url = None
 
         if 'entries' in info and len(info['entries']) > 0:
-            first_entry = info['entries'][0]
+            first_entry = info['entries']
             download_url = first_entry.get('url')
             title = first_entry.get('title', 'Downloaded_Video')
             thumbnail = first_entry.get('thumbnail', '')
@@ -89,7 +80,6 @@ def download():
             title = info.get('title', 'Downloaded_Video')
             thumbnail = info.get('thumbnail', '')
 
-        # अगर डायरेक्ट लिंक न मिले तो फ़ॉर्मेट लिस्ट से बेस्ट ऑडियो+वीडियो उठाना
         if not download_url:
             formats = info.get('formats', [])
             for fmt in reversed(formats):
@@ -115,7 +105,7 @@ def download():
 
 
 # ============================================================
-# NEW DOWNLOAD PROXY ROUTE (साइज़ फिक्स करने और क्रोम पर प्ले रोकने के लिए)
+# लीक-प्रूफ़ डाउनलोड रूट (प्रॉक्सी का ₹1 का भी डेटा खर्च नहीं होगा)
 # ============================================================
 @app.route('/download-video')
 def download_video_proxy():
@@ -129,39 +119,37 @@ def download_video_proxy():
             'Connection': 'keep-alive'
         }
         
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
+        # 🟢 सुरक्षा कवच: यहाँ से proxies=request_proxies हटा दिया गया है।
+        # अब 100MB+ का भारी डेटा रेलवे के फ्री टियर से जाएगा, आपकी प्रॉक्सी से नहीं।
+        req = requests.get(video_url, stream=True, headers=headers, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
         total_size = req.headers.get('content-length')
 
-        # 🟢 हर बार फाइल का नाम यूनिक (बिल्कुल अलग) बनाने के लिए टाइमस्टैम्प
         import time
         unique_id = int(time.time())
         dynamic_filename = f"video_{unique_id}.mp4"
 
-      # 🟢 हर बार फाइल का नाम यूनिक (बिल्कुल अलग) बनाने के लिए टाइमस्टैम्प
-import time
-unique_id = int(time.time())
-dynamic_filename = f"video_{unique_id}.mp4"
+        response_headers = {
+            'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
+            'Content-Type': 'video/mp4',
+            'X-Content-Type-Options': 'nosniff',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+        
+        if total_size:
+            response_headers['Content-Length'] = total_size
 
-response_headers = {
-    'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
-    'Content-Type': 'video/mp4',
-    'X-Content-Type-Options': 'nosniff'
-}
-
-if total_size:
-    response_headers['Content-Length'] = total_size
-
-return Response(
-    req.iter_content(chunk_size=1024 * 1024),
-    headers=response_headers,
-    direct_passthrough=True
-)
-           
-
+        return Response(
+            # 256KB का ऑप्टिमाइज़्ड चंक ताकि बड़ी फाइलें भी बिना अटके डाउनलोड हों
+            req.iter_content(chunk_size=256 * 1024), 
+            headers=response_headers,
+            direct_passthrough=True
+        )
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
