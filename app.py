@@ -123,22 +123,25 @@ def download_video_proxy():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Connection': 'keep-alive'
         }
-        # टाइमआउट को बढ़ाकर 60 सेकंड किया ताकि स्लो नेटवर्क पर एरर न आए
+        
         req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
-        # 🟢 यह लाइन वीडियो का कुल साइज निकालेगी (जिससे '?' एरर ठीक होगा)
         total_size = req.headers.get('content-length')
 
+        # 🟢 हर बार फाइल का नाम यूनिक (बिल्कुल अलग) बनाने के लिए टाइमस्टैम्प
+        import time
+        unique_id = int(time.time())
+        dynamic_filename = f"video_{unique_id}.mp4"
+
         response_headers = {
-            'Content-Disposition': 'attachment; filename="video.mp4"',
+            'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
             'Content-Type': 'video/mp4',
             'X-Content-Type-Options': 'nosniff'
         }
         
-        # 🟢 क्रोम ब्राउज़र को कुल साइज बताना ताकि '?' हट जाए
         if total_size:
             response_headers['Content-Length'] = total_size
 
@@ -146,7 +149,7 @@ def download_video_proxy():
             req.iter_content(chunk_size=64 * 1024), 
             headers=response_headers,
             direct_passthrough=True
-        )
+        )   
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
