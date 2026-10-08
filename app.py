@@ -47,11 +47,8 @@ def download():
 
     clean_url = video_url.strip()
 
-    # 🟢 बिल बचाने और ऑडियो ट्रैक सुरक्षित करने वाला परफेक्ट लाइटवेट कॉन्फ़िगरेशन
-        # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
+        # 🟢 केवल इस हिस्से को लाइन 50 से 67 की जगह पेस्ट करें
     ydl_opts = {
-        # स्मार्ट फ़िल्टर: पहले ऐसी MP4 वीडियो ढूँढेगा जिसमें ऑडियो-वीडियो साथ हो, 
-        # न मिलने पर बिना बिल बढ़ाए डिफ़ॉल्ट बेस्ट कंबाइंड फ़ाइल उठा लेगा।
         'format': 'best[vcodec!=none][acodec!=none]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
         'quiet': True,
         'no_warnings': True,
@@ -60,7 +57,7 @@ def download():
         'proxy': PROXY_URL,
         'extractor_args': {
             'instagram': {'check_embed': True},
-            'facebook': {'force_dash': False} # फेसबुक को कंबाइंड (ऑडियो वाली) वीडियो देने पर मजबूर करेगा
+            'facebook': {'force_dash': False}
         },
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -69,6 +66,7 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
