@@ -1173,52 +1173,71 @@
 
         /* DOWNLOAD VIDEO */
         async function downloadVideo() {
-            const urlInput = document.getElementById("videoUrl").value.trim();
-            const errorMsg = document.getElementById("errorMsg");
-            const resultContainer = document.getElementById("resultContainer");
-            const downloadText = document.getElementById("downloadText");
+    const urlInput = document.getElementById("videoUrl").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+    const resultContainer = document.getElementById("resultContainer");
+    const downloadText = document.getElementById("downloadText");
 
-            document.getElementById("qualityOptions").style.display = "none";
+    document.getElementById("qualityOptions").style.display = "none";
 
-            if (!urlInput) {
-                errorMsg.innerText = t("emptyUrl");
-                errorMsg.style.display = "block";
-                return;
+    if (!urlInput) {
+        errorMsg.innerText = t("emptyUrl");
+        errorMsg.style.display = "block";
+        return;
+    }
+
+    errorMsg.style.display = "none";
+    resultContainer.style.display = "none";
+    downloadText.innerText = t("searching");
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/download?url=${encodeURIComponent(urlInput)}`);
+        const data = await response.json();
+
+        if (data.status === "success") {
+            // थंबनेल और टाइटल सेट करना
+            document.getElementById("thumbImg").src = data.thumbnail || "https://placeholder.com";
+            document.getElementById("videoTitle").innerText = data.title || "Video";
+            
+            // HD और SD लिंक्स को अलग-अलग सेट करना
+            const sdUrl = data.sd_url || data.download_url;
+            const hdUrl = data.hd_url || data.download_url;
+
+            const backendSdUrl = `${BACKEND_URL}/download-video?url=${encodeURIComponent(sdUrl)}`;
+            const backendHdUrl = `${BACKEND_URL}/download-video?url=${encodeURIComponent(hdUrl)}`;
+
+            // बटनों में सही लिंक डालना
+            const saveBtn = document.getElementById("saveBtn"); 
+            const normalBtn = document.getElementById("normalBtn"); 
+            const hdBtn = document.getElementById("hdBtn"); 
+
+            if (saveBtn) {
+                saveBtn.href = backendSdUrl;
+                saveBtn.setAttribute('download', 'video.mp4');
+            }
+            if (normalBtn) {
+                normalBtn.href = backendSdUrl;
+                normalBtn.setAttribute('download', 'video_sd.mp4');
+            }
+            if (hdBtn) {
+                hdBtn.href = backendHdUrl;
+                hdBtn.setAttribute('download', 'video_hd.mp4');
             }
 
-            errorMsg.style.display = "none";
-            resultContainer.style.display = "none";
-            downloadText.innerText = t("searching");
+            resultContainer.style.display = "block";
 
-            try {
-                const response = await fetch(`${BACKEND_URL}/download?url=${encodeURIComponent(urlInput)}`);
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    document.getElementById("thumbImg").src = data.thumbnail || "https://via.placeholder.com/400x200";
-                    document.getElementById("videoTitle").innerText = data.title || "Video";
-
-                    const resultVideoUrl = data.download_url;
-
-                    // डायरेक्ट लिंक के बजाय रेलवे बैकएंड के रूट पर भेजना
-                    const backendDownloadUrl = `${BACKEND_URL}/download-video?url=${encodeURIComponent(resultVideoUrl)}`;
-
-                    document.getElementById("normalBtn").href = backendDownloadUrl;
-                    document.getElementById("hdBtn").href = backendDownloadUrl;
-
-                    resultContainer.style.display = "block";
-                } else {
-                    errorMsg.innerText = data.message || t("searchError");
-                    errorMsg.style.display = "block";
-                }
-            } catch (err) {
-                console.error(err);
-                errorMsg.innerText = t("serverError");
-                errorMsg.style.display = "block";
-            } finally {
-                downloadText.innerText = t("download");
-            }
+        } else {
+            errorMsg.innerText = data.message || t("searchError");
+            errorMsg.style.display = "block";
         }
+    } catch (err) {
+        console.error(err);
+        errorMsg.innerText = t("serverError");
+        errorMsg.style.display = "block";
+    } finally {
+        downloadText.innerText = t("download");
+    }
+}
 
         /* QUALITY OPTIONS TOGGLE */
         function showQualityOptions() {
