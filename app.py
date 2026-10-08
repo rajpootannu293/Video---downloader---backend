@@ -3,7 +3,7 @@ import requests
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
-from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
+from urllib.parse import quote
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -16,13 +16,10 @@ PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
+# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग करना ज़रूरी है
 ENCODED_PASS = quote(PROXY_PASS)
-
-# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
-# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
 request_proxies = {
     "http": PROXY_URL,
     "https": PROXY_URL
@@ -47,10 +44,9 @@ def download():
 
     clean_url = video_url.strip()
 
-    # yt-dlp Configuration
-          ydl_opts = {
-        # 'bestvideo+bestaudio' अब काम करेगा क्योंकि स्टेप 1 पूरा करते ही FFmpeg आ जाएगा!
-        'format': 'bestvideo+bestaudio/best', 
+    # 🟢 FFmpeg के साथ बेस्ट वीडियो और ऑडियो मर्ज करने का परफेक्ट फ़िल्टर
+    ydl_opts = {
+        'format': 'bestvideo+bestaudio/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
@@ -64,7 +60,6 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
-        
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -115,9 +110,6 @@ def download():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-# ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
-# ============================================================
 @app.route('/download-video')
 def download_video_proxy():
     video_url = request.args.get('url')
@@ -130,13 +122,11 @@ def download_video_proxy():
             'Connection': 'keep-alive'
         }
         
-        # वेबशेयर प्रॉक्सी के साथ सोशल मीडिया से कनेक्ट करना
         req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
-        # वीडियो का कुल साइज (Length) निकालना
         total_size = req.headers.get('content-length')
 
         response_headers = {
@@ -145,7 +135,6 @@ def download_video_proxy():
             'X-Content-Type-Options': 'nosniff'
         }
         
-        # क्रोम ब्राउज़र को कुल साइज बताना ताकि ऑडियो-वीडियो न अटके और '?' हट जाए
         if total_size:
             response_headers['Content-Length'] = total_size
 
