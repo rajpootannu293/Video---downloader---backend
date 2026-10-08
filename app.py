@@ -129,18 +129,31 @@ def download_video_proxy():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Connection': 'keep-alive'
         }
-        # यहाँ request_proxies पास किया है ताकि यह रूट भी ब्लॉक न हो
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
+        
+        # वेबशेयर प्रॉक्सी के साथ सोशल मीडिया से कनेक्ट करना
+        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
+        # वीडियो का कुल साइज (Length) निकालना
+        total_size = req.headers.get('content-length')
+
         response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
-            'Content-Type': 'video/mp4'
+            'Content-Type': 'video/mp4',
+            'X-Content-Type-Options': 'nosniff'
         }
         
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        # क्रोम ब्राउज़र को कुल साइज बताना ताकि ऑडियो-वीडियो न अटके और '?' हट जाए
+        if total_size:
+            response_headers['Content-Length'] = total_size
+
+        return Response(
+            req.iter_content(chunk_size=64 * 1024), 
+            headers=response_headers,
+            direct_passthrough=True
+        )
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
