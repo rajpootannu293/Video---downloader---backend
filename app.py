@@ -48,12 +48,9 @@ def download():
     clean_url = video_url.strip()
 
     # yt-dlp Configuration
-              
-    # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
-   
-    ydl_opts = {
-        # यह फ़ॉर्मेट सख्त नियम लागू करेगा कि वीडियो mp4 हो और उसमें ऑडियो ज़रूर शामिल हो
-        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+          ydl_opts = {
+        # 'bestvideo+bestaudio' अब काम करेगा क्योंकि स्टेप 1 पूरा करते ही FFmpeg आ जाएगा!
+        'format': 'bestvideo+bestaudio/best', 
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
@@ -67,9 +64,7 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
-  
-
-
+        
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
