@@ -1,9 +1,9 @@
 import os
 import requests
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, redirect # 🟢 redirect यहाँ इम्पोर्ट किया है
 from flask_cors import CORS
 import yt_dlp
-from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
+from urllib.parse import quote 
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -16,13 +16,9 @@ PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
 ENCODED_PASS = quote(PROXY_PASS)
-
-# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
-# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
 request_proxies = {
     "http": PROXY_URL,
     "https": PROXY_URL
@@ -54,11 +50,9 @@ def download():
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
-        'proxy': PROXY_URL,
-        # 🟢 यह नया ऑप्शन जोड़ें: यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
+        'proxy': PROXY_URL, # 🟢 सिर्फ वीडियो इन्फो निकालने के लिए प्रॉक्सी का उपयोग (नाममात्र का खर्च)
         'extractor_args': {'instagram': {'check_embed': True}}, 
         'http_headers': {
-            # हर बार अलग ब्राउज़र दिखाने के लिए जेनेरिक हेडर
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -80,12 +74,16 @@ def download():
         if 'entries' in info and len(info['entries']) > 0:
             first_entry = info['entries'][0]
             download_url = first_entry.get('url')
-            title = first_entry.get('title', 'Downloaded_Video')
+            title = first_entry.get('title', 'MT_Video')
             thumbnail = first_entry.get('thumbnail', '')
         else:
             download_url = info.get('url')
-            title = info.get('title', 'Downloaded_Video')
+            title = info.get('title', 'MT_Video')
             thumbnail = info.get('thumbnail', '')
+
+        # 🟢 वीडियो टाइटल से स्पेस और स्पेशल कैरेक्टर हटाना ताकि फाइल नेम एकदम सही बने
+        clean_title = "".join([c for c in title if c.isalpha() or c.isdigit() or c==' ']).rstrip()
+        clean_title = clean_title.replace(" ", "_")[:50] 
 
         formats = info.get('formats', [])
         for fmt in formats:
@@ -102,6 +100,7 @@ def download():
             return jsonify({
                 'status': 'success',
                 'title': title,
+                'clean_title': clean_title, # 🟢 फ्रंटएंड में रैंडम नाम बनाने के लिए भेजा
                 'thumbnail': thumbnail,
                 'download_url': download_url,
                 'sd_url': sd_url or download_url,
@@ -116,34 +115,25 @@ def download():
 
 
 # ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
+# 🟢 सुपर-इकोनॉमी डाउनलोड रूट (प्रॉक्सी और रेलवे डेटा खर्च = 0)
 # ============================================================
 @app.route('/download-video')
 def download_video_proxy():
     video_url = request.args.get('url')
+    filename = request.args.get('title', 'MT_Video') # 🟢 फ्रंटएंड से डायनामिक नाम आ रहा है
+
     if not video_url:
         return "URL is missing", 400
 
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Connection': 'keep-alive'
-        }
-        # यहाँ request_proxies पास किया है ताकि यह रूट भी ब्लॉक न हो
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
-        
-        if req.status_code != 200:
-            return f"Error from source server: {req.status_code}", 400
-
-        response_headers = {
-            'Content-Disposition': 'attachment; filename="video.mp4"',
-            'Content-Type': 'video/mp4'
-        }
-        
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        # 🟢 चालाकी भरा तरीका: वीडियो को रेलवे सर्वर पर डाउनलोड करने के बजाय
+        # हम सिर्फ रिडायरेक्ट (302) कर रहे हैं। इससे वीडियो का पूरा हैवी डेटा सीधे 
+        # इंस्टाग्राम/फेसबुक के सर्वर से यूज़र के फोन में जाएगा। 
+        # आपका रेलवे बैंडविड्थ और प्रॉक्सी खर्च बिल्कुल ₹0 (जीरो) हो जाएगा!
+        return redirect(video_url), 302
         
     except Exception as e:
-        return f"Error downloading video: {str(e)}", 500
+        return f"Error redirection: {str(e)}", 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
