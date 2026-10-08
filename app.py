@@ -45,8 +45,11 @@ def download():
     clean_url = video_url.strip()
 
     # 🟢 FFmpeg के साथ बेस्ट वीडियो और ऑडियो मर्ज करने का परफेक्ट फ़िल्टर
+    
+    # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
     ydl_opts = {
-        'format': 'bestvideo+bestaudio/best',
+        # यह फ़िल्टर सख्त निर्देश देता है कि केवल वही एक फ़ाइल चुनी जाए जिसमें वीडियो और ऑडियो पहले से जुड़े हों
+        'format': 'best[vcodec!=none][acodec!=none]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
