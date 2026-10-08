@@ -3,26 +3,23 @@ import requests
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import yt_dlp
-from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
+from urllib.parse import quote
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # ==========================================
-# Webshare Rotating Proxy Settings
+# Webshare Rotating Proxy Settings (From Your File)
 # ==========================================
 PROXY_USER = "zivhkhbm-rotate"
 PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
+# पासवर्ड की सुरक्षित एनकोडिंग
 ENCODED_PASS = quote(PROXY_PASS)
-
-# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
-# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
 request_proxies = {
     "http": PROXY_URL,
     "https": PROXY_URL
@@ -47,18 +44,16 @@ def download():
 
     clean_url = video_url.strip()
 
-    # yt-dlp Configuration
+    # 🟢 बिल बचाने और ऑडियो लाने का बेस्ट लाइटवेट फ़िल्टर
     ydl_opts = {
-        'format': 'best',
+        'format': 'best[vcodec!=none][acodec!=none]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
         'proxy': PROXY_URL,
-        # 🟢 यह नया ऑप्शन जोड़ें: यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
         'extractor_args': {'instagram': {'check_embed': True}}, 
         'http_headers': {
-            # हर बार अलग ब्राउज़र दिखाने के लिए जेनेरिक हेडर
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -115,9 +110,6 @@ def download():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-# ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
-# ============================================================
 @app.route('/download-video')
 def download_video_proxy():
     video_url = request.args.get('url')
@@ -129,18 +121,29 @@ def download_video_proxy():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Connection': 'keep-alive'
         }
-        # यहाँ request_proxies पास किया है ताकि यह रूट भी ब्लॉक न हो
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
+        
+        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
+        # 🟢 फ़ाइल साइज़ का '?' एरर फिक्स करने के लिए हेडर
+        total_size = req.headers.get('content-length')
+
         response_headers = {
             'Content-Disposition': 'attachment; filename="video.mp4"',
-            'Content-Type': 'video/mp4'
+            'Content-Type': 'video/mp4',
+            'X-Content-Type-Options': 'nosniff'
         }
         
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        if total_size:
+            response_headers['Content-Length'] = total_size
+
+        return Response(
+            req.iter_content(chunk_size=64 * 1024), 
+            headers=response_headers,
+            direct_passthrough=True
+        )
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
