@@ -48,9 +48,10 @@ def download():
     clean_url = video_url.strip()
 
     # yt-dlp Configuration
-        # 🟢 इसे अपने app.py में पुराने ydl_opts = { ... } की जगह बदलें
+            # 🟢 इसे अपने app.py में पुराने ydl_opts वाले ब्लॉक की जगह बदलें
     ydl_opts = {
-        'format': 'best[ext=mp4]/best', # 👈 यह लाइन सुनिश्चित करेगी कि हमेशा आवाज़ के साथ वाली बेस्ट वीडियो ही डाउनलोड हो
+        # 'b' या 'best' यहाँ सुनिश्चित करेगा कि ऑडियो और वीडियो दोनों एक ही सिंगल फाइल में मिलें
+        'format': 'best[vcodec!=none][acodec!=none]/best', 
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
@@ -64,6 +65,7 @@ def download():
             'Sec-Fetch-Mode': 'navigate',
         }
     }
+
 
 
     try:
