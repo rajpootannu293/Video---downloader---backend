@@ -48,15 +48,20 @@ def download():
     clean_url = video_url.strip()
 
     # 🟢 बिल बचाने और ऑडियो ट्रैक सुरक्षित करने वाला परफेक्ट लाइटवेट कॉन्फ़िगरेशन
+        # 🟢 इसे अपने app.py में पुराने ydl_opts वाले हिस्से की जगह पेस्ट करें
     ydl_opts = {
-        'format': 'best[vcodec!=none][acodec!=none]/best',
+        # स्मार्ट फ़िल्टर: पहले ऐसी MP4 वीडियो ढूँढेगा जिसमें ऑडियो-वीडियो साथ हो, 
+        # न मिलने पर बिना बिल बढ़ाए डिफ़ॉल्ट बेस्ट कंबाइंड फ़ाइल उठा लेगा।
+        'format': 'best[vcodec!=none][acodec!=none]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
         'proxy': PROXY_URL,
-        # यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
-        'extractor_args': {'instagram': {'check_embed': True}}, 
+        'extractor_args': {
+            'instagram': {'check_embed': True},
+            'facebook': {'force_dash': False} # फेसबुक को कंबाइंड (ऑडियो वाली) वीडियो देने पर मजबूर करेगा
+        },
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
