@@ -146,7 +146,7 @@ def download_video_proxy():
             response_headers['Content-Length'] = total_size
 
         return Response(
-            req.iter_content(chunk_size=64 * 1024), 
+            req.iter_content(chunk_size=1024 * 1024), 
             headers=response_headers,
             direct_passthrough=True
         )   
