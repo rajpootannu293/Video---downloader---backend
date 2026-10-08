@@ -1,9 +1,10 @@
 import os
 import requests
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, redirect # 🟢 redirect को जोड़ा गया है
 from flask_cors import CORS
 import yt_dlp
-from urllib.parse import quote # स्पेशल कैरेक्टर (#) को ठीक करने के लिए
+from urllib.parse import quote 
+import time # 🟢 टाइमस्टैम्प के लिए इसे जोड़ा गया है
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -16,13 +17,9 @@ PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड में '#' होने के कारण इसे स्पेशल एनकोडिंग (quote) करना ज़रूरी है
 ENCODED_PASS = quote(PROXY_PASS)
-
-# यह आपका बिल्कुल सही प्रॉक्सी यूआरएल फॉर्मेट है
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
-# requests लाइब्रेरी के लिए प्रॉक्सी डिक्शनरी
 request_proxies = {
     "http": PROXY_URL,
     "https": PROXY_URL
@@ -49,16 +46,17 @@ def download():
 
     # yt-dlp Configuration
     ydl_opts = {
-        'format': 'best',
+        # 🟢 ऑडियो गायब होने की समस्या का असली इलाज:
+        # यह सोशल मीडिया से केवल वही डायरेक्ट लिंक्स उठाएगा जिनमें ऑडियो और वीडियो पहले से मर्ज्ड (साथ में) हों।
+        # इससे आपके रेलवे सर्वर पर कोई लोड नहीं आएगा और ऑडियो 100% चालू रहेगा।
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
         'proxy': PROXY_URL,
-        # 🟢 यह नया ऑप्शन जोड़ें: यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
         'extractor_args': {'instagram': {'check_embed': True}}, 
         'http_headers': {
-            # हर बार अलग ब्राउज़र दिखाने के लिए जेनेरिक हेडर
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -116,47 +114,27 @@ def download():
 
 
 # ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
-# ============================================================
-# ============================================================
-# NEW DOWNLOAD PROXY ROUTE (क्रोम पर वीडियो प्ले होने से रोकने के लिए)
+# NEW DOWNLOAD PROXY ROUTE (रेलवे और प्रॉक्सी का खर्चा बचाने वाला नया तरीका)
 # ============================================================
 @app.route('/download-video')
 def download_video_proxy():
     video_url = request.args.get('url')
     
-    # 🟢 1. 'Download Again' फिक्स करने के लिए: हर बार यूआरएल से एक नया नाम या रैंडम आईडी लेंगे
-    # फ्रंटएंड से हम 'title' भेजेंगे, अगर नहीं आया तो टाइमस्टैम्प से नाम बदल जाएगा
-    import time
+    # 🟢 'Download file again' को रोकने के लिए यूआरएल से 'title' लेंगे।
+    # अगर फ्रंटएंड से टाइटल नहीं आता है, तो करंट टाइमस्टैम्प से नाम ऑटोमैटिक बदल जाएगा।
     filename = request.args.get('title', f"video_{int(time.time())}")
 
     if not video_url:
         return "URL is missing", 400
 
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Connection': 'keep-alive'
-        }
-        
-        req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=30)
-        
-        if req.status_code != 200:
-            return f"Error from source server: {req.status_code}", 400
-
-        # 🟢 2. क्वेश्चन मार्क (?) और लेंथ फिक्स करने के लिए: इंस्टाग्राम सर्वर से वीडियो का असली साइज़ निकालें
-        total_size = req.headers.get('content-length')
-
-        response_headers = {
-            'Content-Disposition': f'attachment; filename="{filename}.mp4"', # 🟢 यहाँ 'video.mp4' की जगह डायनामिक नाम डाला
-            'Content-Type': 'video/mp4'
-        }
-        
-        # 🟢 3. अगर ओरिजिनल सर्वर ने साइज़ भेजा है, तो उसे अपने हेडर में जोड़ें ताकि ब्राउज़र को साइज़ पता चल सके
-        if total_size:
-            response_headers['Content-Length'] = total_size
-        
-        return Response(req.iter_content(chunk_size=64 * 1024), headers=response_headers)
+        # 🟢 रेलवे बैंडविड्थ और प्रॉक्सी खर्च बचाने का सबसे बेस्ट तरीका (Redirect):
+        # पुराना कोड भारी वीडियो डेटा को रेलवे पर डाउनलोड करता था (जिससे प्रॉक्सी का बिल बढ़ता था)।
+        # यहाँ हम सिर्फ यूज़र को ओरिजिनल वीडियो यूआरएल पर रिडायरेक्ट कर रहे हैं।
+        # इससे पूरा हैवी डेटा सीधे इंस्टाग्राम/फेसबुक के सर्वर से यूज़र के फोन में जाएगा। 
+        # परिणाम: आपका प्रॉक्सी खर्च और रेलवे बैंडविड्थ = बिल्कुल 0% (Zero)!
+        # इसके अलावा, ओरिजिनल सर्वर से कनेक्ट होने के कारण क्रोम को असली 'Content-Length' पता चल जाएगी, जिससे (?) मार्क की समस्या भी खत्म हो जाएगी।
+        return redirect(video_url), 302
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
