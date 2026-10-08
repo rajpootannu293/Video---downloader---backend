@@ -150,16 +150,6 @@ def download_video_proxy():
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
 
-            response_headers['Content-Length'] = total_size
-
-        return Response(
-            req.iter_content(chunk_size=64 * 1024), 
-            headers=response_headers,
-            direct_passthrough=True
-        )
-        
-    except Exception as e:
-        return f"Error downloading video: {str(e)}", 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
