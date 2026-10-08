@@ -1201,12 +1201,7 @@
                     const resultVideoUrl = data.download_url;
 
                     // डायरेक्ट लिंक के बजाय रेलवे बैकएंड के रूट पर भेजना
-                    // हर बार नया नाम बनाने के लिए साफ टाइटल और रैंडम नंबर
-const randomId = Math.floor(Math.random() * 100000);
-const cleanTitle = data.title ? data.title.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 30) : "video";
-
-const backendDownloadUrl = `${BACKEND_URL}/download-video?url=${encodeURIComponent(resultVideoUrl)}&title=${cleanTitle}_${randomId}`;
-
+                    const backendDownloadUrl = `${BACKEND_URL}/download-video?url=${encodeURIComponent(resultVideoUrl)}`;
 
                     document.getElementById("normalBtn").href = backendDownloadUrl;
                     document.getElementById("hdBtn").href = backendDownloadUrl;
