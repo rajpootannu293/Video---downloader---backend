@@ -141,20 +141,26 @@ def download_video_proxy():
         unique_id = int(time.time())
         dynamic_filename = f"video_{unique_id}.mp4"
 
+                 # 🟢 केवल इस हिस्से को लाइन 144 से 157 की जगह पेस्ट करें
         response_headers = {
             'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
             'Content-Type': 'video/mp4',
-            'X-Content-Type-Options': 'nosniff'
+            'X-Content-Type-Options': 'nosniff',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
         }
         
         if total_size:
             response_headers['Content-Length'] = total_size
 
         return Response(
-            req.iter_content(chunk_size=1024 * 1024), 
+            # chunk_size को 256KB किया गया है ताकि 100MB+ फाइलें बिना अटके डाउनलोड हों
+            req.iter_content(chunk_size=256 * 1024), 
             headers=response_headers,
             direct_passthrough=True
-        )   
+        )
+
         
     except Exception as e:
         return f"Error downloading video: {str(e)}", 500
