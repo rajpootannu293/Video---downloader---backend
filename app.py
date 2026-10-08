@@ -16,7 +16,7 @@ PROXY_PASS = "46c1nmnz4r1o"
 PROXY_HOST = "p.webshare.io"
 PROXY_PORT = "80"
 
-# पासवर्ड सुरक्षित एनकोडिंग
+# पासवर्ड में '#' होने के कारण स्पेशल एन코डिंग
 ENCODED_PASS = quote(PROXY_PASS)
 PROXY_URL = f"http://{PROXY_USER}:{ENCODED_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 
@@ -71,7 +71,7 @@ def download():
         download_url = None
 
         if 'entries' in info and len(info['entries']) > 0:
-            first_entry = info['entries']
+            first_entry = info['entries'][0]
             download_url = first_entry.get('url')
             title = first_entry.get('title', 'Downloaded_Video')
             thumbnail = first_entry.get('thumbnail', '')
@@ -119,8 +119,8 @@ def download_video_proxy():
             'Connection': 'keep-alive'
         }
         
-        # 🟢 सुरक्षा कवच: यहाँ से proxies=request_proxies हटा दिया गया है।
-        # अब 100MB+ का भारी डेटा रेलवे के फ्री टियर से जाएगा, आपकी प्रॉक्सी से नहीं।
+        # 🟢 सुरक्षा कवच: यहाँ से proxies=request_proxies पूरी तरह हटा दिया गया है।
+        # यूज़र चाहे 100 बार डाउनलोड शुरू या बंद करे, प्रॉक्सी का डेटा 0 MB खर्च होगा।
         req = requests.get(video_url, stream=True, headers=headers, timeout=60)
         
         if req.status_code != 200:
@@ -132,6 +132,7 @@ def download_video_proxy():
         unique_id = int(time.time())
         dynamic_filename = f"video_{unique_id}.mp4"
 
+        # बफ़र लीक और क्रोम का 'Download Again' रोकने वाले हेडर्स
         response_headers = {
             'Content-Disposition': f'attachment; filename="{dynamic_filename}"',
             'Content-Type': 'video/mp4',
@@ -145,7 +146,7 @@ def download_video_proxy():
             response_headers['Content-Length'] = total_size
 
         return Response(
-            # 256KB का ऑप्टिमाइज़्ड चंक ताकि बड़ी फाइलें भी बिना अटके डाउनलोड हों
+            # 256KB का चंक साइज़ जो स्लो नेटवर्क (4G) और बड़ी फ़ाइलों (100MB+) दोनों के लिए बेस्ट है
             req.iter_content(chunk_size=256 * 1024), 
             headers=response_headers,
             direct_passthrough=True
