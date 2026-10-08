@@ -122,12 +122,13 @@ def download_video_proxy():
             'Connection': 'keep-alive'
         }
         
+        # वेबशेयर प्रॉक्सी का सुरक्षित उपयोग
         req = requests.get(video_url, stream=True, headers=headers, proxies=request_proxies, timeout=60)
         
         if req.status_code != 200:
             return f"Error from source server: {req.status_code}", 400
 
-        # 🟢 फ़ाइल साइज़ का '?' एरर फिक्स करने के लिए हेडर
+        # 🟢 यह लाइन वीडियो का कुल साइज निकालेगी (जिससे 4G फोन का एरर ठीक होगा)
         total_size = req.headers.get('content-length')
 
         response_headers = {
@@ -136,7 +137,19 @@ def download_video_proxy():
             'X-Content-Type-Options': 'nosniff'
         }
         
+        # क्रोम को साइज बताना ताकि '?' हट जाए और डाउनलोड न रुके
         if total_size:
+            response_headers['Content-Length'] = total_size
+
+        return Response(
+            req.iter_content(chunk_size=64 * 1024), 
+            headers=response_headers,
+            direct_passthrough=True
+        )
+        
+    except Exception as e:
+        return f"Error downloading video: {str(e)}", 500
+
             response_headers['Content-Length'] = total_size
 
         return Response(
