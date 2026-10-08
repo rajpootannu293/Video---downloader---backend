@@ -48,23 +48,23 @@ def download():
     clean_url = video_url.strip()
 
     # yt-dlp Configuration
+        # 🟢 इसे अपने app.py में पुराने ydl_opts = { ... } की जगह बदलें
     ydl_opts = {
-        'format': 'best',
+        'format': 'best[ext=mp4]/best', # 👈 यह लाइन सुनिश्चित करेगी कि हमेशा आवाज़ के साथ वाली बेस्ट वीडियो ही डाउनलोड हो
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
         'ignoreerrors': True,
         'proxy': PROXY_URL,
-        # 🟢 यह नया ऑप्शन जोड़ें: यह वीडियो डाउनलोड करने के लिए एक्स्ट्रा सिक्योरिटी को बायपास करेगा
-        'extractor_args': {'instagram': {'check_embed': True}}, 
+        'extractor_args': {'instagram': {'check_embed': True}},
         'http_headers': {
-            # हर बार अलग ब्राउज़र दिखाने के लिए जेनेरिक हेडर
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Sec-Fetch-Mode': 'navigate',
         }
     }
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
